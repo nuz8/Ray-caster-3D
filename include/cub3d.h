@@ -115,6 +115,8 @@
 # define TILE_SIZE 15
 # define MMP_W 600
 # define MMP_H 210
+# define MINIMAP_TILE_MIN 1
+# define MINIMAP_TILE_MAX 48
 # define MAP_OFFSET_X 25
 # define MAP_OFFSET_Y 25
 // # define PL_DIR_LEN 8
@@ -237,11 +239,17 @@ typedef struct s_data
 	int	 	mmp_h;
 	int	 	mmp_offx;
 	int	 	mmp_offy;
-	int		mmp_scale;
+	double		mmp_scale;
+	double		mmp_inv_scale;
+	int	 	mm_tile_size;
+	int	 	mmp_disp_w;
+	int	 	mmp_disp_h;
 	int	 	tile_size;		// size of each tile/block in the overview map
 	int		tiles_x;
 	int		tiles_y;
 	bool	fov_toggle;
+	int	 	pl_dia_mm;
+	int	 	pl_dir_len_mm;
 
 	// FPS related
 	int		fps;

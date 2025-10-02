@@ -48,7 +48,7 @@ void	test_print_data()
 	printf("Mini-map height:	mmp_h		=	%d\n", data->mmp_h);
 	printf("Mini-map offset x:	mmp_offx	=	%d\n", data->mmp_offx);
 	printf("Mini-map offset y:	mmp_offy	=	%d\n", data->mmp_offy);
-	printf("Mini-map scale:		mmp_scale	=	%d\n", data->mmp_scale);
+	printf("Mini-map scale:		mmp_scale	=	%.3f\n", data->mmp_scale);
 	printf("Tile size:		tile_size	=	%d\n", data->tile_size);
 	printf("Tiles in x:		tiles_x		=	%d\n", data->tiles_x);
 	printf("Tiles in y:		tiles_y		=	%d\n", data->tiles_y);
@@ -90,8 +90,8 @@ void	test_print_rays(char c)
 			// printf("  Sine: %.3f\t", rays[i]->sine);
 			printf("  Center X: %d\t", *rays[i]->center_x);
 			printf("  Center Y: %d\t", *rays[i]->center_y);
-			printf("  Hit X: %d\t", rays[i]->hit_x);
-			printf("  Hit Y: %d\t", rays[i]->hit_y);
+			printf("  Hit X: %.2f\t", rays[i]->hit_x);
+			printf("  Hit Y: %.2f\t", rays[i]->hit_y);
 			printf("  Length: %.3f\n", rays[i]->length);
 		}
 	}
@@ -121,8 +121,8 @@ void	test_print_rays(char c)
 			// printf("  Sine: %.3f\t", rays[i]->sine);
 			printf("  Center X: %d  ", *rays[i]->center_x);
 			printf("  Center Y: %d\t", *rays[i]->center_y);
-			printf("  Hit X: %d  ", rays[i]->hit_x);
-			printf("  Hit Y: %d\t", rays[i]->hit_y);
+			printf("  Hit X: %.2f  ", rays[i]->hit_x);
+			printf("  Hit Y: %.2f\t", rays[i]->hit_y);
 			printf("  Length: %.d\t", (int)rays[i]->length);
 
 			double	dx = rays[i]->hit_x - *rays[i]->center_x;

@@ -41,12 +41,30 @@ void    place_player2D_2(t_game *game)
 {
 	t_img		*img;
     t_data      *data;
+	int		center_x;
+	int		center_y;
+	int		radius;
 
 	img = game->player->blob2D;
     data = game->data;
-	
-    draw_filled_circle_smooth(img, data->tile_size / 2,
-                data->tile_size / 2, data->pl_dia / 2, RED);
+
+	if (!img || img->width == 0 || img->height == 0)
+		return ;
+	center_x = (int)(img->width / 2);
+	center_y = (int)(img->height / 2);
+	radius = data->pl_dia_mm / 2;
+	if (radius < 1 && data->pl_dia_mm > 0)
+		radius = 1;
+	if (radius > center_x)
+		radius = center_x;
+	if (radius > center_y)
+		radius = center_y;
+	if (radius <= 0)
+	{
+		mlx_put_pixel(img, center_x, center_y, RED);
+		return ;
+	}
+	draw_filled_circle_smooth(img, center_x, center_y, radius, RED);
 }
 
 /*

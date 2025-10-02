@@ -12,6 +12,13 @@
 
 #include "../../include/cub3d.h"
 
+static inline int	world_to_minimap(double value, double scale)
+{
+	return ((int)lround(value * scale));
+}
+
+static void	minimap_plot_ray(t_player *pl, t_rays *ray, uint32_t colour);
+
 // void	draw_player_direction(t_map *map);
 void	draw_player_direction(t_player *pl, t_data *data);
 void	erase_prev_direction(t_player *pl, t_data *data);
@@ -43,42 +50,68 @@ void	draw_player_direction(t_player *pl, t_data *data)
 
 void	erase_prev_direction(t_player *pl, t_data *data)
 {
-	int		center_x;
-	int		center_y;
-	double	distance;
-	int		ix;
-	int		iy;
+	double	scale;
+	double	world_center_x;
+	double	world_center_y;
+	int		width;
+	int		height;
+	int		step;
 
-	center_x = data->pl_center_x;
-	center_y = data->pl_center_y;
-	distance = 0;
-	while (distance++ < PL_DIR_LEN)
+	if (!pl->view)
+		return ;
+	scale = data->mmp_scale;
+	world_center_x = data->pl_center_x_d;
+	world_center_y = data->pl_center_y_d;
+	width = (int)pl->view->width;
+	height = (int)pl->view->height;
+	step = 0;
+	while (step++ < PL_DIR_LEN)
 	{
-		ix = center_x + (int)(distance * data->cosine);	// As for image coordinates, right is still plus positive and left is still negative
-		iy = center_y - (int)(distance * data->sine); // As for image coordinates, up is negative/decrement and down is positive/increment
-		if (ix >= 0 && ix < (int)pl->view->width && iy >= 0 && iy < (int)pl->view->height)
+		double	world_x;
+		double	world_y;
+		int		ix;
+		int		iy;
+
+		world_x = world_center_x + step * data->cosine;
+		world_y = world_center_y - step * data->sine;
+		ix = world_to_minimap(world_x, scale);
+		iy = world_to_minimap(world_y, scale);
+		if (ix >= 0 && ix < width && iy >= 0 && iy < height)
 			mlx_put_pixel(pl->view, ix, iy, RESET);
 	}
 }
 
 void	draw_cur_direction(t_player *pl, t_data *data)
 {
-	int		center_x;
-	int		center_y;
-	double	distance;
-	int		ix;
-	int		iy;
+	double	scale;
+	double	world_center_x;
+	double	world_center_y;
+	int		width;
+	int		height;
+	int		step;
 
+	if (!pl->view)
+		return ;
 	data->sine = sin(data->cur_dir);
 	data->cosine = cos(data->cur_dir);
-	center_x = data->pl_center_x;
-	center_y = data->pl_center_y;
-	distance = 0;
-	while (distance++ < PL_DIR_LEN)
+	scale = data->mmp_scale;
+	world_center_x = data->pl_center_x_d;
+	world_center_y = data->pl_center_y_d;
+	width = (int)pl->view->width;
+	height = (int)pl->view->height;
+	step = 0;
+	while (step++ < PL_DIR_LEN)
 	{
-		ix = center_x + (int)(distance * data->cosine);	// As for image coordinates, right is still plus positive and left is still negative
-		iy = center_y - (int)(distance * data->sine); // As for image coordinates, up is negative/decrement and down is positive/increment
-		if (ix >= 0 && ix < (int)pl->view->width && iy >= 0 && iy < (int)pl->view->height)
+		double	world_x;
+		double	world_y;
+		int		ix;
+		int		iy;
+
+		world_x = world_center_x + step * data->cosine;
+		world_y = world_center_y - step * data->sine;
+		ix = world_to_minimap(world_x, scale);
+		iy = world_to_minimap(world_y, scale);
+		if (ix >= 0 && ix < width && iy >= 0 && iy < height)
 			mlx_put_pixel(pl->view, ix, iy, RED);
 	}
 }
@@ -137,18 +170,7 @@ void	erase_previous_fov(t_player *pl, t_rays **rays)
 
 void	erase_ray(t_player * pl, t_rays *ray)
 {
-	int	i;
-	int	ix;
-	int	iy;
-
-	i = -1;
-	while (++i < ray->length)
-	{
-		ix = *ray->center_x + (int)(i * ray->cosine);
-		iy = *ray->center_y - (int)(i * ray->sine);
-		if (ix >= 0 && ix < (int)pl->view->width && iy >= 0 && iy < (int)pl->view->height)
-			mlx_put_pixel(pl->view, ix, iy, RESET);
-	}
+	minimap_plot_ray(pl, ray, RESET);
 }
 
 /*
@@ -173,17 +195,60 @@ void	draw_current_fov(t_player *pl, t_rays **rays)
 
 void	draw_ray(t_player * pl, t_rays *ray)
 {
-	int	i;
-	int	ix;
-	int	iy;
+	minimap_plot_ray(pl, ray, DEBUG_GREEN2);
+}
 
+static void	minimap_plot_ray(t_player *pl, t_rays *ray, uint32_t colour)
+{
+	t_data	*data;
+	double	scale;
+	double	start_x;
+	double	start_y;
+	double	cos_v;
+	double	sin_v;
+	int		width;
+	int		height;
+	int		steps;
+	int		i;
+	int		prev_ix;
+	int		prev_iy;
+	bool	first;
+
+	if (!pl || !pl->view || !ray)
+		return ;
+	data = pl->data;
+	scale = data->mmp_scale;
+	width = (int)pl->view->width;
+	height = (int)pl->view->height;
+	start_x = *ray->center_x_d;
+	start_y = *ray->center_y_d;
+	cos_v = ray->cosine;
+	sin_v = ray->sine;
+	if (ray->length <= 0.0 || width <= 0 || height <= 0)
+		return ;
+	steps = ft_maxi(1, (int)ceil(ray->length));
+	first = true;
+	prev_ix = 0;
+	prev_iy = 0;
 	i = -1;
-	while (++i < ray->length)
+	while (++i <= steps)
 	{
-		ix = *ray->center_x + (int)(i * ray->cosine);
-		iy = *ray->center_y - (int)(i * ray->sine);
-		if (ix >= 0 && ix < (int)pl->view->width && iy >= 0 && iy < (int)pl->view->height)
-			mlx_put_pixel(pl->view, ix, iy, DEBUG_GREEN2);
+		double	world_x;
+		double	world_y;
+		int		ix;
+		int		iy;
+
+		world_x = start_x + i * cos_v;
+		world_y = start_y - i * sin_v;
+		ix = world_to_minimap(world_x, scale);
+		iy = world_to_minimap(world_y, scale);
+		if (!first && ix == prev_ix && iy == prev_iy)
+			continue ;
+		first = false;
+		prev_ix = ix;
+		prev_iy = iy;
+		if (ix >= 0 && ix < width && iy >= 0 && iy < height)
+			mlx_put_pixel(pl->view, ix, iy, colour);
 	}
 }
 

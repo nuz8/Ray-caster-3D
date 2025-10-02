@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 03:20:14 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/09/27 02:44:56 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/09/29 17:38:05 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ void	draw_3d_walls(t_game *game);
 void	erase_3d_walls(t_game *game);
 
 static void	draw_column(t_game *game, int screen_x, int wall_height,
-		float wall_hit_x, t_txr *texture);
-static void	erase_column(t_game *game, int screen_x, int wall_height,
 		float wall_hit_x, t_txr *texture);
 static uint32_t	get_pixel_from_texture(t_txr *texture, int x, int y);
 
@@ -69,43 +67,12 @@ void	draw_3d_walls(t_game *game)
 
 void	erase_3d_walls(t_game *game)
 {
-	int			screen_x;
-	int			wall_height;
-	float 		wall_hit_x;
-	
-	t_rays		**rays;
-	t_rays		*ray;
-	int			focal_length;
-	int			colm_h;
-	// int			wind_w;
-	int			num_rays;
+	size_t	pixel_count;
 
-	if (!game || !game->img3D)
-		exit_early(game, "render_3d_walls: Invalid game or img3D", EXIT_FAILURE);
-
-	rays = game->player->rays;
-	// wind_w = game->data->wind_w;
-	focal_length = 15;
-	colm_h = focal_length * game->data->wind_h;
-	num_rays = game->data->num_rays;
-	screen_x = 0;
-	while (screen_x < num_rays)
-	{
-	ray = rays[screen_x];
-	if (ray->inv_wall_distance <= 0.0)
-	{
-		screen_x++;
-		continue ;
-	}
-	wall_height = (int)(colm_h * ray->inv_wall_distance);
-	wall_hit_x = ray->tex_u;
-	if (wall_hit_x < 0.0)
-		wall_hit_x = 0.0;
-	else if (wall_hit_x > 1.0)
-		wall_hit_x = 1.0;
-	erase_column(game, screen_x, wall_height, wall_hit_x, ray->tex);	// fill with transparent pixels to erase previously drawn pixels
-		screen_x++;
-	}
+	if (!game || !game->img3D || !game->img3D->pixels)
+		return;
+	pixel_count = (size_t)game->img3D->width * (size_t)game->img3D->height;
+	ft_bzero(game->img3D->pixels, pixel_count * sizeof(uint32_t));
 }
 
 /*
@@ -119,23 +86,29 @@ Renders a single vertical column with:
 static void	draw_column(t_game *game, int screen_x, int wall_height,
 		float wall_hit_x, t_txr *texture)
 {
-	int		y;
-	int		draw_start;
-	int		draw_end;
-	int		tex_x;
-	int		tex_y;
-	double	tex_step;
-	double	tex_pos;
+	uint8_t		*dst;
+	uint32_t	img_width;
+	int			window_h;
+	int			draw_start;
+	int			draw_end;
+	int			tex_x;
+	int			tex_y;
+	double		tex_step;
+	double		tex_pos;
+	double		wall_start;
+	double		wall_end;
 	uint32_t	color;
-	double	wall_start;
-	double	wall_end;
-	int		window_h;
+	uint8_t		*pixel;
+	int			y;
 
-	window_h = game->data->wind_h;
-	if (!texture || screen_x < 0 || screen_x >= game->data->wind_w
-		|| wall_height <= 0)
+	if (!texture || !game->img3D || !game->img3D->pixels)
 		return;
-	wall_start = ((double)window_h - (double)wall_height) / 2.0;
+	window_h = (int)game->img3D->height;
+	img_width = game->img3D->width;
+	if (screen_x < 0 || (uint32_t)screen_x >= img_width || wall_height <= 0)
+		return;
+	dst = game->img3D->pixels;
+	wall_start = ((double)window_h - (double)wall_height) * 0.5;
 	wall_end = wall_start + wall_height;
 	draw_start = (int)floor(wall_start);
 	draw_end = (int)ceil(wall_end) - 1;
@@ -146,12 +119,11 @@ static void	draw_column(t_game *game, int screen_x, int wall_height,
 	if (draw_end < draw_start)
 		return;
 
-	// High-precision texture sampling - avoid integer truncation
-	double tex_x_precise = wall_hit_x * texture->width;
-	tex_x = (int)tex_x_precise;
-	if (tex_x >= (int)texture->width) tex_x = texture->width - 1;
-	if (tex_x < 0) tex_x = 0;
-
+	tex_x = (int)(wall_hit_x * texture->width);
+	if (tex_x >= (int)texture->width)
+		tex_x = texture->width - 1;
+	else if (tex_x < 0)
+		tex_x = 0;
 	tex_step = (double)texture->height / (double)wall_height;
 	tex_pos = ((double)draw_start - wall_start) * tex_step;
 	y = draw_start;
@@ -161,44 +133,13 @@ static void	draw_column(t_game *game, int screen_x, int wall_height,
 		if (tex_y >= (int)texture->height)
 			tex_y = texture->height - 1;
 		color = get_pixel_from_texture(texture, tex_x, tex_y);
-		mlx_put_pixel(game->img3D, screen_x, y, color);
+		pixel = dst + ((((size_t)y * img_width) + (size_t)screen_x) * 4);
+		pixel[0] = (color >> 24) & 0xFF;
+		pixel[1] = (color >> 16) & 0xFF;
+		pixel[2] = (color >> 8) & 0xFF;
+		pixel[3] = color & 0xFF;
 		y++;
 		tex_pos += tex_step;
-	}
-}
-
-static void	erase_column(t_game *game, int screen_x, int wall_height,
-		float wall_hit_x, t_txr *texture)
-{
-	int		y;
-	int		draw_start;
-	int		draw_end;
-	uint32_t	color;
-	double	wall_start;
-	double	wall_end;
-	int		window_h;
-
-	window_h = game->data->wind_h;
-	if (!texture || screen_x < 0 || screen_x >= game->data->wind_w
-		|| wall_height <= 0)
-		return;
-	(void)wall_hit_x;
-	wall_start = ((double)window_h - (double)wall_height) / 2.0;
-	wall_end = wall_start + wall_height;
-	draw_start = (int)floor(wall_start);
-	draw_end = (int)ceil(wall_end) - 1;
-	if (draw_start < 0)
-		draw_start = 0;
-	if (draw_end >= window_h)
-		draw_end = window_h - 1;
-	if (draw_end < draw_start)
-		return;
-	y = draw_start;
-	while (y <= draw_end)
-	{
-		color = 0;
-		mlx_put_pixel(game->img3D, screen_x, y, color);
-		y++;
 	}
 }
 

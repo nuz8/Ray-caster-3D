@@ -80,13 +80,19 @@ static void	initialize_map_data(t_data *data)
 	data->mmp_h = 0;
 	data->mmp_offx = MAP_OFFSET_X;
 	data->mmp_offy = MAP_OFFSET_Y;
-	data->mmp_scale = MAP_SCALE;
+	data->mmp_scale = 1.0;
+	data->mmp_inv_scale = 1.0;
+	data->mm_tile_size = TILE_SIZE;
+	data->mmp_disp_w = 0;
+	data->mmp_disp_h = 0;
 	data->tile_size = TILE_SIZE;
 	if (TILE_SIZE > 0)
 		data->inv_tile_size = 1.0 / (double)TILE_SIZE;
 	data->tiles_x = 0;
 	data->tiles_y = 0;
 	data->fov_toggle = true;
+	data->pl_dia_mm = data->pl_dia;
+	data->pl_dir_len_mm = PL_DIR_LEN;
 }
 
 t_map	*get_map(void)

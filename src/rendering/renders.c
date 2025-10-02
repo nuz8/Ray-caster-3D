@@ -14,11 +14,11 @@
 
 void		render_graphics(t_game *game);
 
-static void inline	render_background(t_game *game);
-static void inline	render_3Dview(t_game *game);
-static void inline	render_minimap(t_game *game, t_map *map);
+static inline void	render_background(t_game *game);
+static inline void	render_3Dview(t_game *game);
+static inline void	render_minimap(t_game *game, t_map *map);
 static void			render_player_blob(t_game *game, t_player *pl);
-static void inline	render_2Dview(t_game *game, t_player *pl);
+static inline void	render_2Dview(t_game *game, t_player *pl);
 
 // test image
 // static void inline render_test_image(t_game *game, t_map *map);
@@ -38,7 +38,7 @@ void	render_graphics(t_game *game)
 	render_player_blob(game, pl);
 }
 
-static void inline	render_background(t_game *game)
+static inline void	render_background(t_game *game)
 {
 	if (game->background_inst_id == -1)
 	{
@@ -49,7 +49,7 @@ static void inline	render_background(t_game *game)
 	}
 }
 
-static void inline render_3Dview(t_game *game)
+static inline void render_3Dview(t_game *game)
 {
 	if (game->img3D_inst_id == -1)
 	{
@@ -60,7 +60,7 @@ static void inline render_3Dview(t_game *game)
 	}
 }
 
-static void inline render_minimap(t_game *game, t_map *map)
+static inline void render_minimap(t_game *game, t_map *map)
 {
 	t_data	*data;
 
@@ -78,26 +78,37 @@ static void inline render_minimap(t_game *game, t_map *map)
 static void	render_player_blob(t_game *game, t_player *pl)
 {
 	t_data	*data;
+	int		draw_x;
+	int		draw_y;
+	int		blob_w;
+	int		blob_h;
+	double	scale;
 
 	data = game->data;
+	if (!pl->blob2D)
+		return ;
+	scale = data->mmp_scale;
+	blob_w = (int)pl->blob2D->width;
+	blob_h = (int)pl->blob2D->height;
+	draw_x = (int)lround(data->pl_center_x_d * scale) - blob_w / 2
+		+ data->mmp_offx;
+	draw_y = (int)lround(data->pl_center_y_d * scale) - blob_h / 2
+		+ data->mmp_offy;
 	if (pl->blob_inst_id == -1)
 	{
 		pl->blob_inst_id = mlx_image_to_window(game->mlx, pl->blob2D,
-				data->pl_posx + data->mmp_offx, 
-				data->pl_posy + data->mmp_offy);
+				draw_x, draw_y);
 		if (pl->blob_inst_id < 0)
 			exit_early(game, "blob2D: mlx_image_to_window", EXIT_FAILURE);
 	}
 	else
 	{
-		pl->blob2D->instances[pl->blob_inst_id].x = data->pl_posx +
-				data->mmp_offx;
-		pl->blob2D->instances[pl->blob_inst_id].y = data->pl_posy +
-				data->mmp_offy;
+		pl->blob2D->instances[pl->blob_inst_id].x = draw_x;
+		pl->blob2D->instances[pl->blob_inst_id].y = draw_y;
 	}
 }
 
-static void inline render_2Dview(t_game *game, t_player *pl)
+static inline void render_2Dview(t_game *game, t_player *pl)
 {
 	t_data	*data;
 

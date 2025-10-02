@@ -74,12 +74,13 @@ static void	init_minimap(t_game *game, char *path_to_map)
 	init_background(game);
 	test_print_data(); 				// !! extra utility, to be removed later
 	create_image_array(map, data);
-	map->image = mlx_new_image(game->mlx, data->mmp_w, data->mmp_h);
+	map->image = mlx_new_image(game->mlx, data->mmp_disp_w,
+		data->mmp_disp_h);
 	if (!map->image)
 		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
 
 	// test elements ----
-	map->test = mlx_new_image(game->mlx, data->mmp_w, data->mmp_h);
+	map->test = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
 	if (!map->test)
 		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
 
@@ -107,6 +108,50 @@ static void update_game_data_after_parsing(t_data *data)
 	data->pl_center_y_d = data->pl_center_y;
 	if (data->tile_size > 0)
 		data->inv_tile_size = 1.0 / (double)data->tile_size;
+	if (data->tiles_x > 0 && data->tiles_y > 0
+		&& data->mmp_w > 0 && data->mmp_h > 0)
+	{
+		double	scale_w;
+		double	scale_h;
+		double	scale;
+		double	max_scale;
+
+		scale_w = (double)MMP_W / (double)data->mmp_w;
+		scale_h = (double)MMP_H / (double)data->mmp_h;
+		scale = fmin(scale_w, scale_h);
+		max_scale = (double)MINIMAP_TILE_MAX / (double)data->tile_size;
+		if (scale > max_scale)
+			scale = max_scale;
+		if (scale <= 0.0)
+			scale = (double)MINIMAP_TILE_MIN / (double)data->tile_size;
+		data->mmp_scale = scale;
+		if (data->mmp_scale <= 0.0)
+		{
+			data->mmp_scale = 1.0;
+			scale = data->mmp_scale;
+		}
+		data->mmp_inv_scale = 1.0 / data->mmp_scale;
+		data->mmp_disp_w = ft_maxi(1,
+			(int)lround((double)data->mmp_w * data->mmp_scale));
+		data->mmp_disp_h = ft_maxi(1,
+			(int)lround((double)data->mmp_h * data->mmp_scale));
+		data->mm_tile_size = ft_maxi(1,
+			(int)lround((double)data->tile_size * data->mmp_scale));
+		data->pl_dia_mm = ft_maxi(2,
+			(int)lround((double)data->pl_dia * data->mmp_scale));
+		data->pl_dir_len_mm = ft_maxi(1,
+			(int)lround((double)PL_DIR_LEN * data->mmp_scale));
+	}
+	else
+	{
+		data->mmp_scale = 1.0;
+		data->mmp_inv_scale = 1.0;
+		data->mm_tile_size = data->tile_size;
+		data->mmp_disp_w = ft_maxi(1, data->mmp_w);
+		data->mmp_disp_h = ft_maxi(1, data->mmp_h);
+		data->pl_dia_mm = data->pl_dia;
+		data->pl_dir_len_mm = PL_DIR_LEN;
+	}
 }
 
 static void	init_player(t_game *game)
@@ -117,10 +162,12 @@ static void	init_player(t_game *game)
 	data = game->data;
 	pl = game->player;
 	pl->data = data;
-	pl->blob2D = mlx_new_image(game->mlx, data->tile_size, data->tile_size);
+	pl->blob2D = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
+		ft_maxi(1, data->mm_tile_size));
 	if (!pl->blob2D)
 		exit_early(game, "blob_img: mlx_new_image failed", EXIT_FAILURE);
-	pl->view = mlx_new_image(game->mlx, data->mmp_w, data->mmp_h);
+	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w,
+		data->mmp_disp_h);
 	if (!pl->view)
 		exit_early(game, "view_img: mlx_new_image failed", EXIT_FAILURE);
 	pl->rays = get_rays();
