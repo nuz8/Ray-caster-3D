@@ -3,35 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   init_game.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 05:27:37 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/09/11 20:38:14 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/04 00:07:21 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
 void		init_game_elements(t_game *game, char *arg);
-
 static void	init_game(t_game *game);
 static void	init_minimap(t_game *game, char *path_to_map);
 static void	init_player(t_game *game);
-static void update_game_data_after_parsing(t_data *data);
-
-
-void	init_game_elements(t_game *game, char *arg)
-{
-	init_game(game);
-	game->map = get_map();
-	if (!game->map)
-		exit_early(game, "map: struct malloc failed", EXIT_FAILURE);
-	game->player = get_player();
-	if (!game->player)
-		exit_early(game, "player malloc failed", EXIT_FAILURE);
-	init_minimap(game, arg);
-	init_player(game);
-}
+static void	update_game_data_after_parsing(t_data *data);
 
 static void	init_game(t_game *game)
 {
@@ -39,7 +24,6 @@ static void	init_game(t_game *game)
 
 	*game = (t_game){
 		.background_inst_id = -1, .img3D_inst_id = -1,
-		// .gun_inst_id = -1,
 	};
 	data = get_data();
 	if (!data)
@@ -66,29 +50,18 @@ static void	init_minimap(t_game *game, char *path_to_map)
 	data = game->data;
 	map = game->map;
 	map->data = data;
-
-	// test_print_data();			// !! extra utility, to be removed later
-	
 	parse_game_data(game, path_to_map);
 	update_game_data_after_parsing(data);
 	init_background(game);
-	test_print_data(); 				// !! extra utility, to be removed later
 	create_image_array(map, data);
 	map->image = mlx_new_image(game->mlx, data->mmp_disp_w,
-		data->mmp_disp_h);
+			data->mmp_disp_h);
 	if (!map->image)
 		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
-
-	// test elements ----
 	map->test = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
 	if (!map->test)
 		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
-
 	printf("%d	x	%d\n", data->mmp_w, data->mmp_h);	
-	map_array_printer(map, 1);	// !! extra utility, to be removed later
-	// write_img_array(0, 0);
-	// ------------------
-
 	map->game = game;
 	map->player = game->player;
 }
@@ -201,4 +174,17 @@ void	init_background(t_game *game)
 		}
 		y++;
 	}
+}
+
+void	init_game_elements(t_game *game, char *arg)
+{
+	init_game(game);
+	game->map = get_map();
+	if (!game->map)
+		exit_early(game, "map: struct malloc failed", EXIT_FAILURE);
+	game->player = get_player();
+	if (!game->player)
+		exit_early(game, "player malloc failed", EXIT_FAILURE);
+	init_minimap(game, arg);
+	init_player(game);
 }

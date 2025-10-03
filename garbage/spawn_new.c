@@ -3,76 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_new.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 21:13:03 by pamatya           #+#    #+#             */
-/*   Updated: 2025/08/07 13:55:22 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/03 23:35:42 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
-
-t_game		*get_game(void);
-t_data		*get_data(void);
-t_map		*get_map(void);
-t_player	*get_player(void);
-t_rays		**get_rays(void);
-
-static void	initialize_map_data(t_data *data);
-
-
-// t_game	*get_game(void)
-// {
-// 	static t_game	*game = NULL;
-
-// 	if (!game)
-// 	{
-// 		game = ft_malloc(sizeof(t_game));
-// 		if (game)
-// 		{
-// 			*game = (t_game){
-// 				.mlx = NULL,
-// 				.img3D_inst_id = -1,	// Initialize 3D image instance ID to -1
-// 				// .gun_inst_id = -1,
-// 			};
-// 		}
-// 	}
-// 	return (game);
-// }
-
-t_data	*get_data(void)
-{
-	static t_data	*data = NULL;
-
-	if (!data)
-	{
-		data = ft_malloc(sizeof(t_data));
-		if (data)
-		{
-			data->wind_w = WIDTH;
-			data->wind_h = HEIGHT;
-			data->pl_dia = PLAYER_DIA;
-			data->pl_posx = START_PX;
-			data->pl_posy = START_PY;
-			data->pl_center_x = START_PX + TILE_SIZE / 2;
-			data->pl_center_y = START_PY + TILE_SIZE / 2;
-			data->pl_posx_d = data->pl_posx;
-			data->pl_posy_d = data->pl_posy;
-			data->pl_center_x_d = data->pl_center_x;
-			data->pl_center_y_d = data->pl_center_y;
-			data->inv_tile_size = 1.0 / (double)TILE_SIZE;
-			data->fov = FOV;
-			data->num_rays = NUM_RAYS;
-			data->ini_dir = 'N';
-			data->prev_dir = PI / 2;
-			data->cur_dir = PI / 2;
-			data->cosine = cos(PI / 2);
-			data->sine = sin(PI / 2);
-			initialize_map_data(data);
-		}
-	}
-	return (data);
-}
 
 static void	initialize_map_data(t_data *data)
 {
@@ -93,6 +31,43 @@ static void	initialize_map_data(t_data *data)
 	data->fov_toggle = true;
 	data->pl_dia_mm = data->pl_dia;
 	data->pl_dir_len_mm = PL_DIR_LEN;
+}
+
+static void	init_data_values(t_data *data)
+{
+	data->wind_w = WIDTH;
+	data->wind_h = HEIGHT;
+	data->pl_dia = PLAYER_DIA;
+	data->pl_posx = START_PX;
+	data->pl_posy = START_PY;
+	data->pl_center_x = START_PX + TILE_SIZE / 2;
+	data->pl_center_y = START_PY + TILE_SIZE / 2;
+	data->pl_posx_d = data->pl_posx;
+	data->pl_posy_d = data->pl_posy;
+	data->pl_center_x_d = data->pl_center_x;
+	data->pl_center_y_d = data->pl_center_y;
+	data->inv_tile_size = 1.0 / (double)TILE_SIZE;
+	data->fov = FOV;
+	data->num_rays = NUM_RAYS;
+	data->ini_dir = 'N';
+	data->prev_dir = PI / 2;
+	data->cur_dir = PI / 2;
+	data->cosine = cos(PI / 2);
+	data->sine = sin(PI / 2);
+	initialize_map_data(data);
+}
+
+t_data	*get_data(void)
+{
+	static t_data	*data = NULL;
+
+	if (!data)
+	{
+		data = ft_malloc(sizeof(t_data));
+		if (data)
+			init_data_values(data);
+	}
+	return (data);
 }
 
 t_map	*get_map(void)
@@ -131,17 +106,6 @@ t_player	*get_player(void)
 	return (player);
 }
 
-/*
-Function that returns a pointer to an array of rays.
-  - Used to get the rays for raycasting in the game.
-  - Rays are initialized only once and reused throughout the game.
-  - The rays are stored in a static array, which is allocated on the first call.
-  - Returns a pointer to the array of rays.
-  - Each ray is initialized with its index and other default values.
-
-**Note:	Should only be called once the game and data structures are initialized
-		as it uses the get_data() to get data for its allocation.
-*/
 t_rays	**get_rays(void)
 {
 	static t_rays	**rays = NULL;
@@ -166,7 +130,7 @@ t_rays	**get_rays(void)
 				}
 			}
 		}
-		rays[num_rays] = NULL;		// Null-terminate the array of rays
+		rays[num_rays] = NULL;
 	}
 	return (rays);
 }

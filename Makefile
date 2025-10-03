@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+         #
+#    By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 19:21:39 by pamatya           #+#    #+#              #
-#    Updated: 2025/09/04 14:33:59 by pamatya          ###   ########.fr        #
+#    Updated: 2025/10/04 00:00:54 by sdemiroz         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -98,8 +98,8 @@ vpath %.h $(INC_DIRS)
 vpath %.c $(SRC_DIRS)
 
 SRCS	:=	main.c start.c events.c \
-			$(A)/spawn.c $(A)/init_game.c $(A)/handle_input.c \
-			$(A)/init_rays.c $(A)/init_image_array.c \
+			$(A)/spawn_1.c $(A)/init_game.c $(A)/handle_input.c \
+			$(A)/init_rays.c $(A)/init_image_array.c $(A)/spawn_2.c \
 			$(B)/check_map.c $(B)/map_parser.c $(B)/parsing_helper.c \
 			$(B)/expand_tabs.c $(B1)/minimap_parser.c \
 			$(C)/draw_circle.c $(C)/draw.c $(C)/blocks.c $(C)/rays.c \

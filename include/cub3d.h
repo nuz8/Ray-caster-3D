@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/25 18:42:58 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/09/25 15:59:07 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/03 23:48:33 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -426,7 +426,6 @@ void		parse_minimap(t_map *map);
 
 // src/test_printers
 
-void		test_print_data();
 void		test_print_rays(char c);
 void		map_array_printer(t_map *map, int flag);
 void		write_img_array(int xmax, int ymax);
