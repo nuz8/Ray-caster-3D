@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/25 19:01:58 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/03 21:58:28 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/05 18:20:07 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ int	main(int argc, char **argv)
 	init_events((void *)&game);
 	mlx_loop((game).mlx);
 	mlx_terminate(game.mlx);
-
 	gc_free_all();
-    return(0);
+	return (0);
 }
-

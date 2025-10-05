@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minimap_parser.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 20:00:15 by pamatya           #+#    #+#             */
-/*   Updated: 2025/07/31 03:02:13 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/05 20:51:58 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ void	parse_minimap(t_map *map)
 		geometry[i] = ft_malloc(map->data->tiles_x * sizeof(char) + 1);
 		if (!geometry[i])
 			exit_early(map->game, "Geometry row malloc failed", EXIT_FAILURE);
-		ft_memset(geometry[i], 32, map->data->tiles_x);	// filling up the whole string with spaces (' ' - ascii value 32)
-		geometry[i][map->data->tiles_x] = '\0';			// null termination at the end of each string
+		ft_memset(geometry[i], 32, map->data->tiles_x);
+		geometry[i][map->data->tiles_x] = '\0';
 	}
 	next_line = get_next_line(map->fd);
 	if (!next_line)
@@ -62,13 +62,14 @@ static void	write_to_map_array(t_map *map, char ***geo, char *nxtline)
 					printf("test\n");
 					map->data->pl_posx = j * map->data->tile_size;
 					map->data->pl_posy = i * map->data->tile_size;
-					map->data->pl_center_x = map->data->pl_posx + map->data->tile_size / 2;
-					map->data->pl_center_y = map->data->pl_posy + map->data->tile_size / 2;
+					map->data->pl_center_x = map->data->pl_posx
+						+ map->data->tile_size / 2;
+					map->data->pl_center_y = map->data->pl_posy
+						+ map->data->tile_size / 2;
 					map->data->pl_posx_d = map->data->pl_posx;
 					map->data->pl_posy_d = map->data->pl_posy;
 					map->data->pl_center_x_d = map->data->pl_center_x;
 					map->data->pl_center_y_d = map->data->pl_center_y;
-					// assign_direction(map, nxtline[j]);
 				}
 			}
 		}

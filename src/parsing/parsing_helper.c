@@ -6,18 +6,11 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:17:28 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/09/07 17:24:00 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/05 20:50:19 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
-
-int		check_key_data_completion(t_game *game);
-void	pad_shorter_lines(t_game *game);
-char	**copy_map(char **original);
-bool	flood_fill(char **map, int x, int y);
-void	allocate_map_array(t_game *game, char *line);
-
 
 void	allocate_map_array(t_game *game, char *line)
 {
@@ -25,8 +18,8 @@ void	allocate_map_array(t_game *game, char *line)
 		game->map->map_array = malloc(2 * sizeof(char *));
 	else
 		game->map->map_array = ft_recalloc(game->map->map_array,
-				(game->data->tiles_y + 2) * sizeof(char *),
-				(game->data->tiles_y + 1) * sizeof(char *));
+				(game->data->tiles_y + 2) * sizeof(char *), (game->data->tiles_y
+					+ 1) * sizeof(char *));
 	if (!game->map->map_array)
 	{
 		free(line);
@@ -44,12 +37,8 @@ bool	flood_fill(char **map, int x, int y)
 	if (map[y][x] == '1' || map[y][x] == 'X')
 		return (true);
 	map[y][x] = 'X';
-	return (
-		flood_fill(map, x + 1, y) &&
-		flood_fill(map, x - 1, y) &&
-		flood_fill(map, x, y + 1) &&
-		flood_fill(map, x, y - 1)
-	);
+	return (flood_fill(map, x + 1, y) && flood_fill(map, x - 1, y)
+		&& flood_fill(map, x, y + 1) && flood_fill(map, x, y - 1));
 }
 
 char	**copy_map(char **original)
@@ -77,7 +66,6 @@ char	**copy_map(char **original)
 	return (copy);
 }
 
-
 void	pad_shorter_lines(t_game *game)
 {
 	int		i;
@@ -96,19 +84,21 @@ void	pad_shorter_lines(t_game *game)
 			ft_memset(padded_line, ' ', game->data->tiles_x);
 			padded_line[game->data->tiles_x] = '\0';
 			ft_memcpy(padded_line, game->map->map_array[i], line_len);
-			game->map->map_array[i] = ft_malloc(sizeof(char) * (game->data->tiles_x + 1));
+			game->map->map_array[i] = ft_malloc(sizeof(char)
+					* (game->data->tiles_x + 1));
 			if (!game->map->map_array[i])
 				exit_early(game, "Error allocating padded line\n", 1);
-			ft_strlcpy(game->map->map_array[i], padded_line, game->data->tiles_x + 1);
+			ft_strlcpy(game->map->map_array[i], padded_line, game->data->tiles_x
+				+ 1);
 		}
 		i++;
 	}
 }
 
-
 int	check_key_data_completion(t_game *game)
 {
-	if (game->ceiling_color.r && game->floor_color.r && game->EA_texture && game->NO_texture && game->WE_texture && game->SO_texture)
+	if (game->ceiling_color.r && game->floor_color.r && game->EA_texture
+		&& game->NO_texture && game->WE_texture && game->SO_texture)
 		return (1);
 	return (0);
 }

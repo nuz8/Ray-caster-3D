@@ -6,11 +6,33 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 21:13:03 by pamatya           #+#    #+#             */
-/*   Updated: 2025/10/04 00:02:27 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/05 20:44:03 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
+
+t_player	*get_player(void)
+{
+	static t_player	*player = NULL;
+
+	if (!player)
+	{
+		player = ft_malloc(sizeof(t_player));
+		if (player)
+		{
+			player->data = NULL;
+			player->blob2D = NULL;
+			player->blob_inst_id = -1;
+			player->view = NULL;
+			player->view_inst_id = -1;
+			player->game = NULL;
+			player->map = NULL;
+			player->rays = NULL;
+		}
+	}
+	return (player);
+}
 
 static void	initialize_rest_data(t_data *data)
 {
@@ -95,26 +117,4 @@ t_map	*get_map(void)
 		}
 	}
 	return (map);
-}
-
-t_player	*get_player(void)
-{
-	static t_player	*player = NULL;
-
-	if (!player)
-	{
-		player = ft_malloc(sizeof(t_player));
-		if (player)
-		{
-			player->data = NULL;
-			player->blob2D = NULL;
-			player->blob_inst_id = -1;
-			player->view = NULL;
-			player->view_inst_id = -1;
-			player->game = NULL;
-			player->map = NULL;
-			player->rays = NULL;
-		}
-	}
-	return (player);
 }

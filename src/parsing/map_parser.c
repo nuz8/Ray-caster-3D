@@ -6,18 +6,11 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:21:30 by pamatya           #+#    #+#             */
-/*   Updated: 2025/09/08 02:48:22 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/05 20:49:17 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
-
-void		parse_game_data(t_game *game, char *map_name);
-
-static void	check_file_type(t_game *game, char *map_name);
-static void	read_and_parse_map(t_game *game);
-int			parse_key_data(t_game *game, char *line);
-static int	get_key_index(char *line);
 
 static int	get_key_index(char *line)
 {
@@ -36,13 +29,13 @@ static int	get_key_index(char *line)
 	return (-1);
 }
 
-int		parse_key_data(t_game *game, char *line)
+int	parse_key_data(t_game *game, char *line)
 {
 	static int	checker[KEY_COUNT];
 	int			key;
 
 	if (empty_line(line))
-		return(INITIAL_STATE);
+		return (INITIAL_STATE);
 	key = get_key_index(line);
 	if (key == -1 || checker[key])
 		free_exit_early(game, "Error: Invalid identifier", 1, line);
@@ -60,8 +53,8 @@ int		parse_key_data(t_game *game, char *line)
 	else if (key == C_CHECK)
 		identify_rgb(game, line, &(game->ceiling_color));
 	if (check_key_data_completion(game))
-		return(WAITING_FOR_MAP);
-	return(INITIAL_STATE);
+		return (WAITING_FOR_MAP);
+	return (INITIAL_STATE);
 }
 
 static void	read_and_parse_map(t_game *game)
@@ -114,5 +107,6 @@ void	parse_game_data(t_game *game, char *map_name)
 	close(game->map->fd);
 	pad_shorter_lines(game);
 	check_map(game);
-	assign_direction(game->map, game->map->map_array[game->data->pl_arr_y][game->data->pl_arr_x]);
+	assign_direction(game->map,
+		game->map->map_array[game->data->pl_arr_y][game->data->pl_arr_x]);
 }

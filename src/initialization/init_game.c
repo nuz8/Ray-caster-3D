@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 05:27:37 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/04 00:07:21 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/05 20:45:43 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,36 @@ static void	init_minimap(t_game *game, char *path_to_map);
 static void	init_player(t_game *game);
 static void	update_game_data_after_parsing(t_data *data);
 
+static void	init_minimap(t_game *game, char *path_to_map)
+{
+	t_data	*data;
+	t_map	*map;
+
+	data = game->data;
+	map = game->map;
+	map->data = data;
+	parse_game_data(game, path_to_map);
+	update_game_data_after_parsing(data);
+	init_background(game);
+	create_image_array(map, data);
+	map->image = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
+	if (!map->image)
+		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
+	map->test = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
+	if (!map->test)
+		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
+	printf("%d	x	%d\n", data->mmp_w, data->mmp_h);
+	map->game = game;
+	map->player = game->player;
+}
+
 static void	init_game(t_game *game)
 {
 	t_data	*data;
 
 	*game = (t_game){
-		.background_inst_id = -1, .img3D_inst_id = -1,
+		.background_inst_id = -1,
+		.img3D_inst_id = -1,
 	};
 	data = get_data();
 	if (!data)
@@ -42,33 +66,27 @@ static void	init_game(t_game *game)
 		exit_early(game, "game_img3D: mlx_new_image", EXIT_FAILURE);
 }
 
-static void	init_minimap(t_game *game, char *path_to_map)
+void	init_game_elements(t_game *game, char *arg)
 {
-	t_data	*data;
-	t_map	*map;
-
-	data = game->data;
-	map = game->map;
-	map->data = data;
-	parse_game_data(game, path_to_map);
-	update_game_data_after_parsing(data);
-	init_background(game);
-	create_image_array(map, data);
-	map->image = mlx_new_image(game->mlx, data->mmp_disp_w,
-			data->mmp_disp_h);
-	if (!map->image)
-		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
-	map->test = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
-	if (!map->test)
-		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
-	printf("%d	x	%d\n", data->mmp_w, data->mmp_h);	
-	map->game = game;
-	map->player = game->player;
+	init_game(game);
+	game->map = get_map();
+	if (!game->map)
+		exit_early(game, "map: struct malloc failed", EXIT_FAILURE);
+	game->player = get_player();
+	if (!game->player)
+		exit_early(game, "player malloc failed", EXIT_FAILURE);
+	init_minimap(game, arg);
+	init_player(game);
 }
 
 // Update function to update data fields not done by the parser
-static void update_game_data_after_parsing(t_data *data)
+static void	update_game_data_after_parsing(t_data *data)
 {
+		double scale_w;
+		double scale_h;
+		double scale;
+		double max_scale;
+
 	data->cosine = cos(data->cur_dir);
 	data->sine = sin(data->cur_dir);
 	data->mmp_w = data->tiles_x * data->tile_size;
@@ -81,14 +99,9 @@ static void update_game_data_after_parsing(t_data *data)
 	data->pl_center_y_d = data->pl_center_y;
 	if (data->tile_size > 0)
 		data->inv_tile_size = 1.0 / (double)data->tile_size;
-	if (data->tiles_x > 0 && data->tiles_y > 0
-		&& data->mmp_w > 0 && data->mmp_h > 0)
+	if (data->tiles_x > 0 && data->tiles_y > 0 && data->mmp_w > 0
+		&& data->mmp_h > 0)
 	{
-		double	scale_w;
-		double	scale_h;
-		double	scale;
-		double	max_scale;
-
 		scale_w = (double)MMP_W / (double)data->mmp_w;
 		scale_h = (double)MMP_H / (double)data->mmp_h;
 		scale = fmin(scale_w, scale_h);
@@ -104,16 +117,16 @@ static void update_game_data_after_parsing(t_data *data)
 			scale = data->mmp_scale;
 		}
 		data->mmp_inv_scale = 1.0 / data->mmp_scale;
-		data->mmp_disp_w = ft_maxi(1,
-			(int)lround((double)data->mmp_w * data->mmp_scale));
-		data->mmp_disp_h = ft_maxi(1,
-			(int)lround((double)data->mmp_h * data->mmp_scale));
-		data->mm_tile_size = ft_maxi(1,
-			(int)lround((double)data->tile_size * data->mmp_scale));
-		data->pl_dia_mm = ft_maxi(2,
-			(int)lround((double)data->pl_dia * data->mmp_scale));
-		data->pl_dir_len_mm = ft_maxi(1,
-			(int)lround((double)PL_DIR_LEN * data->mmp_scale));
+		data->mmp_disp_w = ft_maxi(1, (int)lround((double)data->mmp_w
+					* data->mmp_scale));
+		data->mmp_disp_h = ft_maxi(1, (int)lround((double)data->mmp_h
+					* data->mmp_scale));
+		data->mm_tile_size = ft_maxi(1, (int)lround((double)data->tile_size
+					* data->mmp_scale));
+		data->pl_dia_mm = ft_maxi(2, (int)lround((double)data->pl_dia
+					* data->mmp_scale));
+		data->pl_dir_len_mm = ft_maxi(1, (int)lround((double)PL_DIR_LEN
+					* data->mmp_scale));
 	}
 	else
 	{
@@ -136,11 +149,10 @@ static void	init_player(t_game *game)
 	pl = game->player;
 	pl->data = data;
 	pl->blob2D = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
-		ft_maxi(1, data->mm_tile_size));
+			ft_maxi(1, data->mm_tile_size));
 	if (!pl->blob2D)
 		exit_early(game, "blob_img: mlx_new_image failed", EXIT_FAILURE);
-	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w,
-		data->mmp_disp_h);
+	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
 	if (!pl->view)
 		exit_early(game, "view_img: mlx_new_image failed", EXIT_FAILURE);
 	pl->rays = get_rays();
@@ -161,10 +173,10 @@ void	init_background(t_game *game)
 	y = 0;
 	ceiling = (game->ceiling_color.r << 24) | (game->ceiling_color.g << 16) | (game->ceiling_color.b << 8) | 0xFF;
 	floor = (game->floor_color.r << 24) | (game->floor_color.g << 16) | (game->floor_color.b << 8) | 0xFF;
-	while(y < game->data->wind_h)
+	while (y < game->data->wind_h)
 	{
 		x = 0;
-		while(x < game->data->wind_w)
+		while (x < game->data->wind_w)
 		{
 			if (y < game->data->wind_h / 2)
 				mlx_put_pixel(game->background, x, y, ceiling);
@@ -176,15 +188,3 @@ void	init_background(t_game *game)
 	}
 }
 
-void	init_game_elements(t_game *game, char *arg)
-{
-	init_game(game);
-	game->map = get_map();
-	if (!game->map)
-		exit_early(game, "map: struct malloc failed", EXIT_FAILURE);
-	game->player = get_player();
-	if (!game->player)
-		exit_early(game, "player malloc failed", EXIT_FAILURE);
-	init_minimap(game, arg);
-	init_player(game);
-}
