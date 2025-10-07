@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 00:56:05 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/07/23 01:13:28 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:37:46 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,3 @@ t_garbage_collector	*gc_init_garbage_collector(void)
 	dgc->local.size = 0;
 	return (&(dgc->global));
 }
-
-

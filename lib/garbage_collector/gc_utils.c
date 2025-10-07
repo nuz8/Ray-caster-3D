@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 01:09:01 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/07/23 01:02:07 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:37:57 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,3 @@ void	gc_print_linked_list(t_garbage_collector *gc)
 	printf("Len of Linked List: %zu\n", gc->size);
 	return ;
 }
-
-
-

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: david <david@student.42.fr>                +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 14:37:49 by pamatya           #+#    #+#             */
-/*   Updated: 2025/01/20 03:37:20 by david            ###   ########.fr       */
+/*   Updated: 2025/10/07 08:54:48 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,16 @@ char	*extract_rest(char *next_line, char *buffer, int fd);
 
 char	*get_next_line(int fd)
 {
-	ssize_t		bytes_read;
-	static char	(*buffer)[BUFFER_SIZE + 1] = NULL;
-	char		*next_line;
-	char		*joined_line;
+	ssize_t	bytes_read;
+	char	*next_line;
+	char	*joined_line;
 
+	static char(*buffer)[BUFFER_SIZE + 1] = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!buffer)
-		buffer = mmap(NULL, sizeof(char) * 4096 * (BUFFER_SIZE + 1), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+		buffer = mmap(NULL, sizeof(char) * 4096 * (BUFFER_SIZE + 1),
+				PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (buffer == MAP_FAILED)
 		return (NULL);
 	if (!buffer[fd][0])
@@ -53,8 +54,6 @@ char	*get_next_line(int fd)
 	return (next_line);
 }
 
-// Function to get the length of the string terminated by \n or \0, whichever
-// occurs first, also counting the \n character if it occurs within the count.
 size_t	line_length(char *str)
 {
 	int	i;
@@ -72,7 +71,6 @@ size_t	line_length(char *str)
 	return (i);
 }
 
-// Function to join two strings by allocating with malloc
 char	*join_parts(char *s1, char *s2)
 {
 	char	*joined_str;
@@ -98,10 +96,6 @@ char	*join_parts(char *s1, char *s2)
 	return (free(str_ptr[0]), free(str_ptr[1]), joined_str);
 }
 
-// Function to write the contents of the buffer to a new string "store" until
-// the \n character is found and shift the rest of the buffer storage to the
-// beginning, or until the buffer is emptied before finding \n. Then it
-// returns the new string store
 char	*copy_n_shift(char *buffer)
 {
 	char	*line_part;
@@ -126,7 +120,6 @@ char	*copy_n_shift(char *buffer)
 	return (line_part);
 }
 
-// Function to extract the rest part of the next line with buffer as array
 char	*extract_rest(char *next_line, char *buffer, int fd)
 {
 	ssize_t	bytes_read;

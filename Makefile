@@ -167,7 +167,11 @@ $(NAME): $(MLX) $(OBJS)
 
 $(MLX):
 	@if [ ! -d "$(MLX_DIR)" ]; then \
-		git submodule add https://github.com/codam-coding-college/MLX42.git $(MLX_DIR); \
+		if git config --file .gitmodules --get-regexp path | grep -q "$(MLX_DIR)"; then \
+			git submodule update --init --recursive $(MLX_DIR); \
+		else \
+			git submodule add https://github.com/codam-coding-college/MLX42.git $(MLX_DIR); \
+		fi \
 	fi
 	@if [ ! -d "$(MLX_DIR)/build" ]; then \
 		echo "$(YELLOW)$(BOLD)Building MLX42 library...$(NC)"; \
@@ -200,6 +204,11 @@ clean:
 fclean: clean
 	@$(RM) $(NAME) $(NAME_TEST)
 	@make fclean -C $(LIB_DIR)
+	@if [ -d "$(MLX_DIR)" ]; then \
+		git submodule deinit -f -- $(MLX_DIR) > /dev/null 2>&1 || true; \
+		$(RMR) $(MLX_DIR); \
+		echo "$(RED)$(BOLD)Removed MLX42 submodule working tree$(NC)"; \
+	fi
 	@echo "$(RED)$(BOLD)Cleaned executable$(NC)"
 
 re: fclean all

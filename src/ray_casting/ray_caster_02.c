@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 07:45:20 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/07 07:45:20 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:33:53 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,22 @@ void	assign_wall_texture(t_game *game, t_rays *ray, t_dvec hop, t_ivec check)
 	if (check.x == 1 && hop.x > 0)
 	{
 		ray->hit_wall = 'E';
-		ray->tex = game->EA_texture;
+		ray->tex = game->ea_texture;
 	}
 	else if (check.x == 1 && hop.x < 0)
 	{
 		ray->hit_wall = 'W';
-		ray->tex = game->WE_texture;
+		ray->tex = game->we_texture;
 	}
 	else if (check.y == 1 && hop.y < 0)
 	{
 		ray->hit_wall = 'N';
-		ray->tex = game->NO_texture;
+		ray->tex = game->no_texture;
 	}
 	else if (check.y == 1 && hop.y > 0)
 	{
 		ray->hit_wall = 'S';
-		ray->tex = game->SO_texture;
+		ray->tex = game->so_texture;
 	}
 	else
 		ray->hit_wall = 'X';

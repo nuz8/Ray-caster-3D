@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 19:21:30 by pamatya           #+#    #+#             */
-/*   Updated: 2025/10/05 20:49:17 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:33:53 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ int	parse_key_data(t_game *game, char *line)
 		free_exit_early(game, "Error: Invalid identifier", 1, line);
 	checker[key] = 1;
 	if (key == NO_CHECK)
-		assign_textures(game, &(game->NO_texture), line, "NO");
+		assign_textures(game, &(game->no_texture), line, "NO");
 	else if (key == SO_CHECK)
-		assign_textures(game, &(game->SO_texture), line, "SO");
+		assign_textures(game, &(game->so_texture), line, "SO");
 	else if (key == WE_CHECK)
-		assign_textures(game, &(game->WE_texture), line, "WE");
+		assign_textures(game, &(game->we_texture), line, "WE");
 	else if (key == EA_CHECK)
-		assign_textures(game, &(game->EA_texture), line, "EA");
+		assign_textures(game, &(game->ea_texture), line, "EA");
 	else if (key == F_CHECK)
 		identify_rgb(game, line, &(game->floor_color));
 	else if (key == C_CHECK)

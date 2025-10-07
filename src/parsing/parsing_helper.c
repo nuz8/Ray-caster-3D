@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 17:17:28 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/05 20:50:19 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:33:53 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,8 @@ void	pad_shorter_lines(t_game *game)
 
 int	check_key_data_completion(t_game *game)
 {
-	if (game->ceiling_color.r && game->floor_color.r && game->EA_texture
-		&& game->NO_texture && game->WE_texture && game->SO_texture)
+	if (game->ceiling_color.r && game->floor_color.r && game->ea_texture
+		&& game->no_texture && game->we_texture && game->so_texture)
 		return (1);
 	return (0);
 }
