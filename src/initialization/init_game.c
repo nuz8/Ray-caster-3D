@@ -20,9 +20,9 @@ static void	init_player(t_game *game)
 	data = game->data;
 	pl = game->player;
 	pl->data = data;
-	pl->blob2D = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
+	pl->blob_2d = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
 			ft_maxi(1, data->mm_tile_size));
-	if (!pl->blob2D)
+	if (!pl->blob_2d)
 		exit_early(game, "blob_img: mlx_new_image failed", EXIT_FAILURE);
 	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
 	if (!pl->view)
@@ -91,7 +91,7 @@ static void	init_game(t_game *game)
 
 	*game = (t_game){
 		.background_inst_id = -1,
-		.img3D_inst_id = -1,
+		.img_3d_inst_id = -1,
 	};
 	data = get_data();
 	if (!data)
@@ -105,9 +105,9 @@ static void	init_game(t_game *game)
 	game->background = mlx_new_image(game->mlx, data->wind_w, data->wind_h);
 	if (!game->background)
 		exit_early(game, "background_img: mlx_new_image", EXIT_FAILURE);
-	game->img3D = mlx_new_image(game->mlx, data->wind_w, data->wind_h);
-	if (!game->img3D)
-		exit_early(game, "game_img3D: mlx_new_image", EXIT_FAILURE);
+	game->img_3d = mlx_new_image(game->mlx, data->wind_w, data->wind_h);
+	if (!game->img_3d)
+		exit_early(game, "game_img_3d: mlx_new_image", EXIT_FAILURE);
 }
 
 void	init_game_elements(t_game *game, char *arg)

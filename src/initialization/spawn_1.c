@@ -22,7 +22,7 @@ t_player	*get_player(void)
 		if (player)
 		{
 			player->data = NULL;
-			player->blob2D = NULL;
+			player->blob_2d = NULL;
 			player->blob_inst_id = -1;
 			player->view = NULL;
 			player->view_inst_id = -1;

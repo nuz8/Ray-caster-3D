@@ -29,7 +29,7 @@ void	start_drawing(t_game *game)
 	draw_3d_walls(game);
 	draw_minimap(game, map);
 	draw_current_fov(pl, pl->rays);
-	place_player2D_2(game);
+	place_player_2d(game);
 	draw_player_direction(game->player, data);
 }
 

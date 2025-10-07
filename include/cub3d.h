@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/25 18:42:58 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/07 04:08:28 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:06:11 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,8 +190,8 @@ typedef struct s_game
 	mlx_t		*mlx;			// for window and mlx context
 	t_img		*background;	// background image with ceiling and floor colors
 	int32_t		background_inst_id;	// instance ID for background image
-	t_img		*img3D;			// for ray-casted 3D image to be put on the window
-	int32_t		img3D_inst_id;	// instance ID for 3D image
+	t_img		*img_3d;			// for ray-casted 3D image to be put on the window
+	int32_t		img_3d_inst_id;	// instance ID for 3D image
 	// t_img		*gun3D;			// gun image to be used in 3D view
 	// int32_t		gun_inst_id;	// gun instance ID for 3D image
 	t_txr 		*NO_texture;
@@ -283,7 +283,7 @@ typedef struct s_player
 {
 	t_data		*data;
 
-	t_img		*blob2D;		// pointer to 2D player blob image
+	t_img		*blob_2d;		// pointer to 2D player blob image
 	int32_t		blob_inst_id;	// instance ID for 2D player blob
 	t_img		*view;
 	int			view_inst_id;
@@ -338,6 +338,87 @@ typedef struct s_offsets_info
 	size_t			count;
 }	t_offsets_info;
 
+typedef struct s_rect
+{
+	int		x0;
+	int		y0;
+	int		x1;
+	int		y1;
+}			t_rect;
+
+typedef struct s_dir_ctx
+{
+	double			center_x;
+	double			center_y;
+	double			scale;
+	int				width;
+	int				height;
+	double			cosine;
+	double			sine;
+}					t_dir_ctx;
+
+typedef struct s_ray_ctx
+{
+	double			start_x;
+	double			start_y;
+	double			cosine;
+	double			sine;
+	double			scale;
+	int				width;
+	int				height;
+	int				steps;
+	int				prev_ix;
+	int				prev_iy;
+	bool			first;
+}					t_ray_ctx;
+
+typedef struct s_ray_trace
+{
+	t_dvec			hop;
+	t_dvec			hype[3];
+	t_ivec			check;
+	t_ivec			hit;
+	t_dvec			start;
+	double			inv_tile;
+}					t_ray_trace;
+
+typedef struct s_wall_frame
+{
+	t_rays			**rays;
+	int				total;
+	int				index;
+	int				scale;
+	t_rays			*ray;
+	int				height;
+	float			tex_u;
+}					t_wall_frame;
+
+typedef struct s_column_ctx
+{
+	t_img			*target;
+	t_txr			*texture;
+	uint8_t			*dst;
+	uint32_t		width;
+	int				screen_x;
+	int				wall_height;
+	float			wall_u;
+	int				draw_start;
+	int				draw_end;
+	double			tex_step;
+	double			tex_pos;
+	int				tex_x;
+}					t_column_ctx;
+
+typedef struct s_blob_ctx
+{
+	double			scale;
+	int				width;
+	int				height;
+	int				draw_x;
+	int				draw_y;
+}					t_blob_ctx;
+
+
 /******************************************************************************/
 /*******     FUNCTIONS     ****************************************************/
 /******************************************************************************/
@@ -346,6 +427,11 @@ typedef struct s_offsets_info
 
 int			main(int argc, char **argv);
 void		game_loop(void *param);
+bool		move_player(t_game *game);
+bool		turn_player(t_game *game);
+double		rotation_step(t_game *game);
+void		clear_player_view(t_game *game);
+void		print_fps(t_data *data);
 void		init_events(void *param);
 
 // src/initialization
@@ -391,7 +477,7 @@ void		start_drawing(t_game *game);
 void		place_block(t_img *img, int i, int j, int block_color);
 void		place_lined_block(t_img *img, int x, int y, int block_color);
 
-void		place_player2D_2(t_game *game);
+void		place_player_2d(t_game *game);
 
 void		draw_player_direction(t_player *pl, t_data *data);
 void		erase_prev_direction(t_player *pl, t_data *data);
@@ -404,27 +490,42 @@ void		draw_current_fov(t_player *pl, t_rays **rays);
 void		draw_ray(t_player * pl, t_rays *ray);
 
 void		udpate_rays(t_rays **rays, t_map *map, t_data *data);
+bool		is_border_pixel(int x, int y, int width, int height);
+double		tile_step(void);
+void		init_tile_edges(double step, int tile, int *start, int *end);
+bool		validate_edge(int *start, int *end, int max);
+bool		init_direction_ctx(t_player *pl, t_data *data, double angle,
+				t_dir_ctx *ctx);
+void		draw_direction_line(t_player *pl, t_dir_ctx *ctx, uint32_t colour);
+int			world_to_minimap(double value, double scale);
+void		minimap_plot_ray(t_player *pl, t_rays *ray, uint32_t colour);
+bool		init_ray_ctx(t_player *pl, t_rays *ray, t_ray_ctx *ctx);
+void		plot_ray_pixels(t_player *pl, t_ray_ctx *ctx, uint32_t colour);
 
 // src/rendering
 
 void		render_graphics(t_game *game);
 void		draw_3d_walls(t_game *game);
 void		erase_3d_walls(t_game *game);
-// uint32_t	get_pixel_from_texture(t_txr *texture, int x, int y);
+void		render_column(t_game *game, t_column_ctx *ctx);
+void		render_minimap_view(t_game *game, t_map *map);
+void		render_player_blob(t_game *game, t_player *pl);
+void		render_2d_view(t_game *game, t_player *pl);
+uint32_t	column_sample_color(t_column_ctx *ctx, int tex_y);
+void		column_write_texel(t_column_ctx *ctx, int y, uint32_t color);
 
 // src/coordinates
 
-bool		wall_in_the_way_hori(t_map *map, int new_cx, int new_cy);
-bool		wall_in_the_way_vert(t_map *map, int new_cx, int new_cy);
 bool		wall_collision_circle(t_map *map, double center_x, double center_y);
-
-void		to_map_xy(int *map_xy, int img_x, int img_y);
-void		to_img_xy(int *img_xy, int map_x, int map_y);
 
 // src/ray_casting
 
 void		cast_rays(t_map *map, t_rays **rays, t_data *data);
 void 		initialize_ray_caster(t_rays *ray, t_data *data, t_dvec *d_ptr[], t_ivec *check);
+void		update_distance(t_dvec *hype, t_ivec *check);
+void		extract_hit(t_rays *ray, t_ray_trace *ctx);
+void		assign_wall_texture(t_game *game, t_rays *ray, t_dvec hop,
+				t_ivec check);
 
 // src/utils
 
@@ -435,21 +536,5 @@ int			ft_maxi(int x, int y);
 void		exit_early(t_game *game, char *msg, int ret);
 void		free_exit_early(t_game *game, char *msg, int ret, char *str);
 
-
-
-/******************************************************************************/
-/*******    EXTRA FUNCTIONS     ***********************************************/
-/******************************************************************************/
-
-// src/parsing/mini_parser
-
-void		parse_minimap(t_map *map);
-
-// src/test_printers
-
-void		test_print_rays(char c);
-void		map_array_printer(t_map *map, int flag);
-void		write_img_array(int xmax, int ymax);
-void		draw_test_image(void);
 
 #endif

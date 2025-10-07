@@ -42,8 +42,8 @@ static void	clear_map(t_game *game, t_map *map)
 
 static void	clear_player(t_game *game, t_player *pl)
 {
-	if (pl->blob2D)
-		mlx_delete_image(game->mlx, pl->blob2D);
+	if (pl->blob_2d)
+		mlx_delete_image(game->mlx, pl->blob_2d);
 	if (pl->view)
 		mlx_delete_image(game->mlx, pl->view);
 }
@@ -54,8 +54,8 @@ static void	clear_mlx(t_game *game)
 	{
 		if (game->background)
 			mlx_delete_image(game->mlx, game->background);
-		if (game->img3D)
-			mlx_delete_image(game->mlx, game->img3D);
+		if (game->img_3d)
+			mlx_delete_image(game->mlx, game->img_3d);
 		mlx_close_window(game->mlx);
 		mlx_terminate(game->mlx);
 	}

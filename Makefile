@@ -6,7 +6,7 @@
 #    By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 19:21:39 by pamatya           #+#    #+#              #
-#    Updated: 2025/10/07 03:56:25 by sdemiroz         ###   ########.fr        #
+#    Updated: 2025/10/07 06:53:11 by sdemiroz         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -94,16 +94,16 @@ G = ray_casting
 vpath %.h $(INC_DIRS)
 vpath %.c $(SRC_DIRS)
 
-SRCS	:=	main.c start.c events.c \
+SRCS	:=	main.c start_01.c start_02.c start_03.c events.c \
 			$(A)/spawn_1.c $(A)/init_game.c $(A)/handle_input.c $(A)/update_game_after_parsing.c \
 			$(A)/init_rays.c $(A)/init_image_array.c $(A)/spawn_2.c \
 			$(B)/check_map_1.c $(B)/check_map_2.c $(B)/map_parser.c $(B)/parsing_helper.c \
 			$(B)/expand_tabs.c \
-			$(C)/draw_circle.c $(C)/draw.c $(C)/blocks.c $(C)/rays.c \
-			$(D)/renders.c $(D)/3d.c \
+			$(C)/draw_circle.c $(C)/draw.c $(C)/blocks_1.c $(C)/blocks_2.c $(C)/rays_1.c $(C)/rays_2.c $(C)/rays_3.c \
+			$(D)/renders_01.c $(D)/renders_02.c $(D)/render_3d_01.c $(D)/render_3d_02.c $(D)/render_3d_03.c \
 			$(E)/utils_valids.c $(E)/error.c \
 			$(F)/collisions.c \
-			$(G)/ray_caster.c $(G)/ray_caster_utils.c \
+			$(G)/ray_caster_01.c $(G)/ray_caster_02.c $(G)/ray_caster_utils.c \
 
 OBJS	:=	$(SRCS:%.c=$(OBJ_DIR)/%.o)
 DEPS	:=	$(OBJS:%.o=%.d)
