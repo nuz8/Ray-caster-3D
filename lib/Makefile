@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+         #
+#    By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/11 14:30:19 by pamatya           #+#    #+#              #
-#    Updated: 2025/07/25 19:47:00 by pamatya          ###   ########.fr        #
+#    Updated: 2025/10/07 12:43:48 by sdemiroz         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,7 @@ SRCS	=	$(A1)/ft_isalnum.c $(A1)/ft_isalpha.c $(A1)/ft_isascii.c $(A1)/ft_isdigit
 			$(A5)/ft_split.c $(A5)/ft_strchr.c $(A5)/ft_strdup.c $(A5)/ft_striteri.c $(A5)/ft_strjoin.c $(A5)/ft_strlcat.c $(A5)/ft_strlcpy.c $(A5)/ft_strlen.c $(A5)/ft_strmapi.c $(A5)/ft_strncmp.c $(A5)/ft_strnstr.c $(A5)/ft_strrchr.c $(A5)/ft_strtrim.c $(A5)/ft_substr.c \
 			$(A6)/ft_atoi.c $(A6)/ft_itoa.c $(A6)/ft_tolower.c $(A6)/ft_toupper.c \
 			$(B)/ft_printf.c $(B1)/ft_form.c $(B1)/ft_putdec.c $(B1)/ft_puthex.c $(B1)/ft_putptr.c $(B1)/ft_putstr.c $(B1)/ft_utils.c $(B1)/ft_lengths.c \
-			$(C)/get_next_line.c \
+			$(C)/get_next_line.c $(C)/get_next_line_utils.c\
 			$(D)/gc_core.c $(D)/gc_interface.c $(D)/gc_utils.c
 # $(D)/collector.c $(D)/exit.c $(D)/utils.c
 
