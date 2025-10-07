@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 15:10:03 by pamatya           #+#    #+#             */
-/*   Updated: 2024/07/01 19:29:54 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/07 13:47:59 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,23 @@ static char	*f_findp(char const *start, char const *set, int const direction)
 
 	found = (char *)start;
 	check = (char *)set;
-	while (*check && *found)
+	while (*found && *check)
 	{
 		while (*check)
 		{
 			if (*found == *check)
 			{
+				if (direction < 0 && found == start)
+					return (found);
 				found += direction;
 				break ;
 			}
-			else
-				check++;
+			check++;
 		}
 		if (*check != '\0')
 			check = (char *)set;
+		else
+			break ;
 	}
 	return (found);
 }

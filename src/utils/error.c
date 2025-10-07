@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 05:08:00 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/07 03:53:57 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 13:40:34 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,14 @@ void	exit_early(t_game *game, char *msg, int ret)
 		perror(msg);
 	if (!game)
 		exit(ret);
+	if (game->no_texture && game->no_texture)
+		mlx_delete_texture(game->no_texture);
+	if (game->so_texture && game->so_texture)
+		mlx_delete_texture(game->so_texture);
+	if (game->we_texture && game->we_texture)
+		mlx_delete_texture(game->we_texture);
+	if (game->ea_texture && game->ea_texture)
+		mlx_delete_texture(game->ea_texture);
 	if (game->mlx && game->map)
 		clear_map(game, game->map);
 	if (game->mlx && game->player)
