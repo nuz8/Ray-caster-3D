@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 15:33:10 by pamatya           #+#    #+#             */
-/*   Updated: 2025/09/25 15:59:08 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 04:18:15 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ void	cast_rays(t_map *map, t_rays **rays, t_data *data)
 	int		total_rays;
 	int		i;
 
-	// if (data->fov_toggle == false)
-	// 	return ;
 	game = map->game;
 	img = map->img_array;
 	total_rays = data->num_rays;
@@ -39,53 +37,11 @@ void	cast_rays(t_map *map, t_rays **rays, t_data *data)
 		calculate_ray_length(game, rays[i], img, data);
 }
 
-// // !! ray-length re-calculation with new hit.x,y might be a better estimation of the wall distance
-// static void	calculate_ray_length(t_game *game, t_rays *ray, char **img,
-// 		t_data *data)
-// {
-// 	t_ivec	hit;
-// 	t_ivec	check;
-// 	t_dvec	hop;
-// 	t_dvec	hype[3];								// hype[0] is ray-length along hypotenuse to length along x and y, and hope[1] is the unit step length along hypotenuse per unit step along x and y, hype[2] is to replace double distance[2] with hype[2].x as distance[0] and hype[2].y as distance[1]
-
-// 	initialize_ray_caster(ray, data, (t_ivec *[]){&hit, &check},
-// 			(t_dvec *[]){&hop, hype});
-// 	while (hype[2].x <= hype[2].y)
-// 	{
-// 		update_distance(hype, &check);
-// 		extract_xy(ray, hype[2].x, (t_ivec *[]){&hit, &check}, hop);
-// 		if (check_hit(data, img, hit, hop))
-// 		{
-// 			ray->length = (int)(hype[2].x);
-
-//			// !! this method of ray-length recalculation with new hit.x,y might be a better estimation of the wall distance
-// 			// double start_x = data->pl_center_x;
-// 			// double start_y = data->pl_center_y;
-// 			// double dx = hit.x - start_x;
-// 			// double dy = hit.y - start_y;
-// 			// if (check.x)
-// 			// 	ray->length = fabs(dx * ray->coeff.x);
-// 			// else if (check.y)
-// 			// 	ray->length = fabs(dy * ray->coeff.y);
-			
-// 			ray->hit_x = hit.x;
-// 			ray->hit_y = hit.y;
-// 			assign_wall_texture(game, ray, hop, check);
-// 			break ;
-// 		}
-// 	}
-// 	printf("r%d: %c\t", ray->index, ray->hit_wall);
-// }
-
-// !! if the game struct was not needed to be passed to this fn, the start struct
-// could be passed instead to save double-dereferencing for each ray per player position
-// as the player position is the same for each ray for an instance of the image drawn
-// !! another optimization msg in the previous version above (on ray re-calculation)
 static void	calculate_ray_length(t_game *game, t_rays *ray, char **img,
 		t_data *data)
 {
 	t_dvec	hop;
-	t_dvec	hype[3];								// hype[0] is ray-length along hypotenuse to length along x and y, and hope[1] is the unit step length along hypotenuse per unit step along x and y, hype[2] is to replace double distance[2] with hype[2].x as distance[0] and hype[2].y as distance[1]
+	t_dvec	hype[3];								
 	t_ivec	check;
 	t_ivec	hit;
 	t_dvec	start;
@@ -110,7 +66,6 @@ static void	calculate_ray_length(t_game *game, t_rays *ray, char **img,
 				ray->wall_distance = ((hype[2].x) * cos(ray->delta));
 				if (ray->wall_distance > 1e-6)
 					ray->inv_wall_distance = 1.0 / ray->wall_distance;
-				// Store precise floating-point hit coordinates
 				ray->hit_x = start.x + hype[2].x * ray->cosine;
 				ray->hit_y = start.y - hype[2].x * ray->sine;
 				assign_wall_texture(game, ray, hop, check);
@@ -131,33 +86,26 @@ static void	calculate_ray_length(t_game *game, t_rays *ray, char **img,
 				break ;
 			}
 		}
-	// printf("r%d: %c\t", ray->index, ray->hit_wall);
 }
 
 static void	update_distance(t_dvec *hype, t_ivec *check)
 {
-	if (hype[0].x < hype[0].y)		// hype[0] is ray-length along hypotenuse to length along x and y
+	if (hype[0].x < hype[0].y)
 	{
-		hype[2].x = hype[0].x;		// hype[2].x is the distance travelled by the ray
-		hype[0].x += hype[1].x;		// hope[1] is the unit step length along hypotenuse per unit step along x and y
+		hype[2].x = hype[0].x;
+		hype[0].x += hype[1].x;
 		check->x = 1;
 		check->y = 0;
 	}
 	else
 	{
-		hype[2].x = hype[0].y;		// hype[2].x is the distance travelled by the ray
+		hype[2].x = hype[0].y;
 		hype[0].y += hype[1].y;
 		check->x = 0;
 		check->y = 1;
 	}
 }
 
-/*
-Function extracts the hit position from distance and then increment it by one
-pixel in the direction of the ray. The incrementing is done to avoid the problem
-of checking at the boundary of the current tile, and instead checking the first
-pixel in the next tile in the direction of the ray
-*/
 static void extract_xy(t_rays *ray, double distance, t_ivec *ptr[], t_dvec hop,
 		t_dvec start)
 {
@@ -210,6 +158,6 @@ static void	assign_wall_texture(t_game *game, t_rays *ray, t_dvec hop, t_ivec ch
 		ray->hit_wall = 'S';
 		ray->tex = game->SO_texture;
 	}
-	else	// might not need this part
+	else
 		ray->hit_wall = 'X';
 }

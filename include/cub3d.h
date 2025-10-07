@@ -6,7 +6,7 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/25 18:42:58 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/03 23:48:33 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 04:08:28 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,6 +317,27 @@ typedef struct s_rays
 	double		tex_u;
 } t_rays;
 
+typedef struct s_circle_ctx
+{
+	t_data	*data;
+	char	**img;
+	double	radius;
+	int		width;
+	int		height;
+}	t_circle_ctx;
+
+typedef struct s_vec2
+{
+	double	x;
+	double	y;
+}	t_vec2;
+
+typedef struct s_offsets_info
+{
+	const t_vec2	*arr;
+	size_t			count;
+}	t_offsets_info;
+
 /******************************************************************************/
 /*******     FUNCTIONS     ****************************************************/
 /******************************************************************************/
@@ -336,6 +357,7 @@ t_player	*get_player(void);
 t_rays		**get_rays(void);
 
 void		init_game_elements(t_game *game, char *arg);
+void		update_game_data_after_parsing(t_data *data);
 
 void		assign_textures(t_game *game, t_txr **txr, char *line, char *prfx);
 void		identify_rgb(t_game *game, char *line, t_color *color);
@@ -367,7 +389,6 @@ int			parse_key_data(t_game *game, char *line);
 void		start_drawing(t_game *game);
 
 void		place_block(t_img *img, int i, int j, int block_color);
-void		place_block2(t_img *img, int i, int j, int block_color, int bls);	// might be removed later
 void		place_lined_block(t_img *img, int x, int y, int block_color);
 
 void		place_player2D_2(t_game *game);

@@ -6,20 +6,18 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 20:19:54 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/09/10 02:25:56 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 02:40:14 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
-// void	assign_textures(t_game *game, mlx_texture_t **img, char *line,
-// 			char *prefix);
-void	assign_textures(t_game *game, t_txr **txr, char *line, char *prefix);
-void	identify_rgb(t_game *game, char *line, t_color *color);
-void	parse_line(t_game *game, char *line);
-int		validate_map_line(t_game *game, char *line);
+void		assign_textures(t_game *game, t_txr **txr, char *line,
+				char *prefix);
+void		identify_rgb(t_game *game, char *line, t_color *color);
+void		parse_line(t_game *game, char *line);
+int			validate_map_line(t_game *game, char *line);
 static int	parse_rgb(char *rgb_str, t_color *color);
-
 
 int	validate_map_line(t_game *game, char *line)
 {
@@ -50,9 +48,8 @@ int	validate_map_line(t_game *game, char *line)
 
 void	parse_line(t_game *game, char *line)
 {
-	int			i;
-	char		*trimmed;
-
+	int		i;
+	char	*trimmed;
 
 	trimmed = ft_strtrim(line, "\n");
 	if (trimmed)
@@ -73,7 +70,6 @@ void	parse_line(t_game *game, char *line)
 	game->data->tiles_y++;
 	free(trimmed);
 }
-
 
 static int	parse_rgb(char *rgb_str, t_color *color)
 {

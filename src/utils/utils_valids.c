@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_valids.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 02:48:36 by pamatya           #+#    #+#             */
-/*   Updated: 2025/08/21 17:46:57 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/07 03:56:47 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,18 @@ bool	is_valid_block(char c);
 bool	is_player(char c);
 int		ft_maxi(int x, int y);
 
-bool is_valid(char c)
+bool	is_valid(char c)
 {
-	return (c == '1' || c == '0' || c == 'N' || c == 'S' || c == 'E' || c == 'W');
+	return (c == '1' || c == '0' || c == 'N' || c == 'S' || c == 'E'
+		|| c == 'W');
 }
 
-bool is_valid_block(char c)
+bool	is_valid_block(char c)
 {
 	return (c == '1' || c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
-bool is_player(char c)
+bool	is_player(char c)
 {
 	return (c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
@@ -35,7 +36,7 @@ bool is_player(char c)
 int	ft_maxi(int x, int y)
 {
 	if (x >= y)
-		return x;
+		return (x);
 	else
-		return y;
+		return (y);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ray_caster_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 14:29:06 by pamatya           #+#    #+#             */
-/*   Updated: 2025/09/11 21:35:44 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/07 04:19:29 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ static void	initialize_xvars(t_rays *ray, t_data *data, double *hype_x,
 static void	initialize_yvars(t_rays *ray, t_data *data, double *hype_y,
 		double *hop_y);
 
-
-// !! Struct check could simply be used as an int variable with toggle between 1 and 0
 void initialize_ray_caster(t_rays *ray, t_data *data, t_dvec *d_ptr[],
 		t_ivec *check)
 {
@@ -105,17 +103,3 @@ static void	initialize_yvars(t_rays *ray, t_data *data, double *hype_y,
 		*hop_y = tile_size;
 	} 
 }
-
-// static void	initialize_axis_check(t_dvec *hype, t_ivec *check)
-// {
-// 	if (hype[0].x < hype[0].y)
-// 	{
-// 		check->x = 1;
-// 		check->y = 0;
-// 	}
-// 	else
-// 	{
-// 		check->x = 0;
-// 		check->y = 1;	
-// 	}
-// }

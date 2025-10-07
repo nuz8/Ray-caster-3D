@@ -3,20 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   init_image_array.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 17:56:54 by pamatya           #+#    #+#             */
-/*   Updated: 2025/08/07 15:23:39 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/07 02:44:13 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
-void	create_image_array(t_map *map, t_data *data);
-
+void		create_image_array(t_map *map, t_data *data);
 static void	morph_map_to_img(char **map, char **img, int hop, t_data *data);
 static void	write_char_block(char **image, int x, int y, char c);
-
 
 void	create_image_array(t_map *map, t_data *data)
 {
@@ -36,24 +34,22 @@ void	create_image_array(t_map *map, t_data *data)
 		img_array[i] = ft_malloc((img_x + 1) * sizeof(char));
 		if (!img_array[i])
 			printf("img_array[%d] malloc had failed\n", i);
-		img_array[i][img_x] = '\0'; // Null-terminate each row
+		img_array[i][img_x] = '\0';
 	}
-	img_array[i] = NULL; // Null-terminate the array of strings
+	img_array[i] = NULL;
 	map->img_array = img_array;
 	morph_map_to_img(map->map_array, img_array, data->tile_size, data);
 }
 
 static void	morph_map_to_img(char **map, char **img, int hop, t_data *data)
 {
-	int		img_xy[2];		// Image coordinate iterators
-	int		map_xy[2];		// Map coordinate iterators
-	int		map_xy_max[2];	// Map coordinate limits
 	char	c;
-	
-	// map-coordinate limits init
+	int		img_xy[2];
+	int		map_xy[2];
+	int		map_xy_max[2];
+
 	map_xy_max[0] = data->tiles_x;
 	map_xy_max[1] = data->tiles_y;
-
 	map_xy[1] = -1;
 	img_xy[1] = 0;
 	while (++map_xy[1] < map_xy_max[1])
@@ -74,10 +70,10 @@ static void	morph_map_to_img(char **map, char **img, int hop, t_data *data)
 
 static void	write_char_block(char **img, int x, int y, char c)
 {
-	int		tile_size;
-	int		cur_x;
-	int		x_limit;
-	int		y_limit;
+	int	tile_size;
+	int	cur_x;
+	int	x_limit;
+	int	y_limit;
 
 	tile_size = get_data()->tile_size;
 	x_limit = x + tile_size;

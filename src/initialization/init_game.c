@@ -6,17 +6,61 @@
 /*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 05:27:37 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/05 20:45:43 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/07 02:46:47 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
-void		init_game_elements(t_game *game, char *arg);
-static void	init_game(t_game *game);
-static void	init_minimap(t_game *game, char *path_to_map);
-static void	init_player(t_game *game);
-static void	update_game_data_after_parsing(t_data *data);
+static void	init_player(t_game *game)
+{
+	t_data		*data;
+	t_player	*pl;
+
+	data = game->data;
+	pl = game->player;
+	pl->data = data;
+	pl->blob2D = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
+			ft_maxi(1, data->mm_tile_size));
+	if (!pl->blob2D)
+		exit_early(game, "blob_img: mlx_new_image failed", EXIT_FAILURE);
+	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
+	if (!pl->view)
+		exit_early(game, "view_img: mlx_new_image failed", EXIT_FAILURE);
+	pl->rays = get_rays();
+	if (!pl->rays)
+		exit_early(game, "rays malloc failed", EXIT_FAILURE);
+	init_rays(pl->rays);
+	pl->game = game;
+	pl->map = game->map;
+}
+
+void	init_background(t_game *game)
+{
+	int			x;
+	int			y;
+	uint32_t	ceiling;
+	uint32_t	floor;
+
+	y = 0;
+	ceiling = (game->ceiling_color.r << 24) | (game->ceiling_color.g << 16)
+		| (game->ceiling_color.b << 8) | 0xFF;
+	floor = (game->floor_color.r << 24) | (game->floor_color.g << 16)
+		| (game->floor_color.b << 8) | 0xFF;
+	while (y < game->data->wind_h)
+	{
+		x = 0;
+		while (x < game->data->wind_w)
+		{
+			if (y < game->data->wind_h / 2)
+				mlx_put_pixel(game->background, x, y, ceiling);
+			else
+				mlx_put_pixel(game->background, x, y, floor);
+			x++;
+		}
+		y++;
+	}
+}
 
 static void	init_minimap(t_game *game, char *path_to_map)
 {
@@ -78,113 +122,3 @@ void	init_game_elements(t_game *game, char *arg)
 	init_minimap(game, arg);
 	init_player(game);
 }
-
-// Update function to update data fields not done by the parser
-static void	update_game_data_after_parsing(t_data *data)
-{
-		double scale_w;
-		double scale_h;
-		double scale;
-		double max_scale;
-
-	data->cosine = cos(data->cur_dir);
-	data->sine = sin(data->cur_dir);
-	data->mmp_w = data->tiles_x * data->tile_size;
-	data->mmp_h = data->tiles_y * data->tile_size;
-	data->pl_center_x = data->pl_posx + data->tile_size / 2;
-	data->pl_center_y = data->pl_posy + data->tile_size / 2;
-	data->pl_posx_d = data->pl_posx;
-	data->pl_posy_d = data->pl_posy;
-	data->pl_center_x_d = data->pl_center_x;
-	data->pl_center_y_d = data->pl_center_y;
-	if (data->tile_size > 0)
-		data->inv_tile_size = 1.0 / (double)data->tile_size;
-	if (data->tiles_x > 0 && data->tiles_y > 0 && data->mmp_w > 0
-		&& data->mmp_h > 0)
-	{
-		scale_w = (double)MMP_W / (double)data->mmp_w;
-		scale_h = (double)MMP_H / (double)data->mmp_h;
-		scale = fmin(scale_w, scale_h);
-		max_scale = (double)MINIMAP_TILE_MAX / (double)data->tile_size;
-		if (scale > max_scale)
-			scale = max_scale;
-		if (scale <= 0.0)
-			scale = (double)MINIMAP_TILE_MIN / (double)data->tile_size;
-		data->mmp_scale = scale;
-		if (data->mmp_scale <= 0.0)
-		{
-			data->mmp_scale = 1.0;
-			scale = data->mmp_scale;
-		}
-		data->mmp_inv_scale = 1.0 / data->mmp_scale;
-		data->mmp_disp_w = ft_maxi(1, (int)lround((double)data->mmp_w
-					* data->mmp_scale));
-		data->mmp_disp_h = ft_maxi(1, (int)lround((double)data->mmp_h
-					* data->mmp_scale));
-		data->mm_tile_size = ft_maxi(1, (int)lround((double)data->tile_size
-					* data->mmp_scale));
-		data->pl_dia_mm = ft_maxi(2, (int)lround((double)data->pl_dia
-					* data->mmp_scale));
-		data->pl_dir_len_mm = ft_maxi(1, (int)lround((double)PL_DIR_LEN
-					* data->mmp_scale));
-	}
-	else
-	{
-		data->mmp_scale = 1.0;
-		data->mmp_inv_scale = 1.0;
-		data->mm_tile_size = data->tile_size;
-		data->mmp_disp_w = ft_maxi(1, data->mmp_w);
-		data->mmp_disp_h = ft_maxi(1, data->mmp_h);
-		data->pl_dia_mm = data->pl_dia;
-		data->pl_dir_len_mm = PL_DIR_LEN;
-	}
-}
-
-static void	init_player(t_game *game)
-{
-	t_data		*data;
-	t_player	*pl;
-
-	data = game->data;
-	pl = game->player;
-	pl->data = data;
-	pl->blob2D = mlx_new_image(game->mlx, ft_maxi(1, data->mm_tile_size),
-			ft_maxi(1, data->mm_tile_size));
-	if (!pl->blob2D)
-		exit_early(game, "blob_img: mlx_new_image failed", EXIT_FAILURE);
-	pl->view = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
-	if (!pl->view)
-		exit_early(game, "view_img: mlx_new_image failed", EXIT_FAILURE);
-	pl->rays = get_rays();
-	if (!pl->rays)
-		exit_early(game, "rays malloc failed", EXIT_FAILURE);
-	init_rays(pl->rays);
-	pl->game = game;
-	pl->map = game->map;
-}
-
-void	init_background(t_game *game)
-{
-	int			x;
-	int			y;
-	uint32_t	ceiling;
-	uint32_t	floor;
-
-	y = 0;
-	ceiling = (game->ceiling_color.r << 24) | (game->ceiling_color.g << 16) | (game->ceiling_color.b << 8) | 0xFF;
-	floor = (game->floor_color.r << 24) | (game->floor_color.g << 16) | (game->floor_color.b << 8) | 0xFF;
-	while (y < game->data->wind_h)
-	{
-		x = 0;
-		while (x < game->data->wind_w)
-		{
-			if (y < game->data->wind_h / 2)
-				mlx_put_pixel(game->background, x, y, ceiling);
-			else
-				mlx_put_pixel(game->background, x, y, floor);
-			x++;
-		}
-		y++;
-	}
-}
-

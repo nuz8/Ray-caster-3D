@@ -6,7 +6,7 @@
 #    By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 19:21:39 by pamatya           #+#    #+#              #
-#    Updated: 2025/10/05 20:59:14 by sdemiroz         ###   ########.fr        #
+#    Updated: 2025/10/07 03:56:25 by sdemiroz         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,25 +90,20 @@ E = utils
 F = coordinates
 G = ray_casting
 
-Z1 = __interims
-Z2 = __test_printers
-
 # Tell the Makefile where headers and source files are
 vpath %.h $(INC_DIRS)
 vpath %.c $(SRC_DIRS)
 
 SRCS	:=	main.c start.c events.c \
-			$(A)/spawn_1.c $(A)/init_game.c $(A)/handle_input.c \
+			$(A)/spawn_1.c $(A)/init_game.c $(A)/handle_input.c $(A)/update_game_after_parsing.c \
 			$(A)/init_rays.c $(A)/init_image_array.c $(A)/spawn_2.c \
 			$(B)/check_map_1.c $(B)/check_map_2.c $(B)/map_parser.c $(B)/parsing_helper.c \
-			$(B)/expand_tabs.c $(B1)/minimap_parser.c \
+			$(B)/expand_tabs.c \
 			$(C)/draw_circle.c $(C)/draw.c $(C)/blocks.c $(C)/rays.c \
 			$(D)/renders.c $(D)/3d.c \
-			$(E)/utils_valids.c $(E)/error.c $(E)/string_utils.c \
-			$(F)/collisions.c $(F)/transform.c \
+			$(E)/utils_valids.c $(E)/error.c \
+			$(F)/collisions.c \
 			$(G)/ray_caster.c $(G)/ray_caster_utils.c \
-			$(Z1)/circles_improved.c \
-			$(Z2)/test_prints.c $(Z2)/print_map_utils.c $(Z2)/draw_test_image.c
 
 OBJS	:=	$(SRCS:%.c=$(OBJ_DIR)/%.o)
 DEPS	:=	$(OBJS:%.o=%.d)

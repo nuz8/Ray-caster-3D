@@ -3,51 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   draw_circle.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 16:44:04 by pamatya           #+#    #+#             */
-/*   Updated: 2025/07/30 19:19:53 by pamatya          ###   ########.fr       */
+/*   Updated: 2025/10/07 04:00:57 by sdemiroz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
+#include <math.h>
 
-/*
- * CIRCLE RENDERING METHODS - PERFORMANCE ANALYSIS
- * 
- * Method Performance Ranking (with separate image instance):
- * 1. draw_filled_circle_smooth() - BEST: High quality, one-time cost acceptable
- * 2. draw_filled_circle_improved() - GOOD: Balanced approach, no floating point
- * 3. draw_filled_circle_simple() - FAST: Minimal cost but blocky appearance  
- * 4. draw_filled_circle_line() - AVOID: High overhead, poor quality
- * 
- * Key Insight: Separate image instance approach changes optimization priorities
- * - Initialization quality matters more than speed
- * - Runtime performance identical for all methods (instance manipulation)
- * - Can afford expensive rendering for better visual results
- */
-#include <math.h> // For sqrtf() in smooth version
+void			place_player2D_2(t_game *game);
 
-void	place_player2D_2(t_game *game);
-
-static void	draw_filled_circle_smooth(t_img *img, int center_x, int center_y, int radius, uint32_t color);
+static void		draw_filled_circle_smooth(t_img *img, int center_x,
+					int center_y, int radius, uint32_t color);
 static uint32_t	blend_color(uint32_t color, float alpha);
 
-/*
-Funtion to call draw circle methods
-  - method == 1 --> draw_filled_circle_smooth()
-*/
-void    place_player2D_2(t_game *game)
+void	place_player2D_2(t_game *game)
 {
-	t_img		*img;
-    t_data      *data;
+	t_img	*img;
+	t_data	*data;
 	int		center_x;
 	int		center_y;
 	int		radius;
 
 	img = game->player->blob2D;
-    data = game->data;
-
+	data = game->data;
 	if (!img || img->width == 0 || img->height == 0)
 		return ;
 	center_x = (int)(img->width / 2);
@@ -67,20 +48,8 @@ void    place_player2D_2(t_game *game)
 	draw_filled_circle_smooth(img, center_x, center_y, radius, RED);
 }
 
-/*
- * Anti-aliased circle with smooth edges (RECOMMENDED for separate instances)
- * 
- * This method uses floating-point distance calculations and alpha blending
- * to create smooth, professional-looking circles. While computationally
- * expensive, the cost is acceptable when used with separate image instances
- * since rendering happens only once.
- * 
- * Performance: ~5x slower than simple method for initialization
- * Quality: Excellent - smooth edges, anti-aliased appearance
- * Best for: Player circles, important UI elements, one-time rendering
- */
-// static void draw_filled_circle_smooth(t_img *img, int center_x, int center_y, int radius, uint32_t color)
-static void draw_filled_circle_smooth(t_img *img, int center_x, int center_y, int radius, uint32_t color)
+static void	draw_filled_circle_smooth(t_img *img, int center_x, int center_y,
+		int radius, uint32_t color)
 {
 	float		radius_f;
 	int			radius_ceil;
@@ -93,50 +62,35 @@ static void draw_filled_circle_smooth(t_img *img, int center_x, int center_y, in
 	uint32_t	blended_color;
 
 	radius_f = (float)radius;
-	radius_ceil = radius + 1; 	// Check beyond exact radius for edge smoothing
+	radius_ceil = radius + 1;
 	y = center_y - radius;
 	while (++y <= center_y + radius_ceil)
 	{
 		x = center_x - radius;
 		while (++x <= center_x + radius_ceil)
 		{
-			// Bounds checking to prevent buffer overflow
 			if (x >= 0 && x < (int)img->width && y >= 0 && y < (int)img->height)
 			{
-				// Calculate exact distance from center (expensive but accurate)
 				dx = (float)(x - center_x);
 				dy = (float)(y - center_y);
-				distance = sqrtf(dx * dx + dy * dy); // EXPENSIVE: sqrt calculation
-
-				// Soft boundary for anti-aliasing effect
+				distance = sqrtf(dx * dx + dy * dy);
 				if (distance <= radius_f + 0.5f)
 				{
-					// Edge zone: apply alpha blending for smooth appearance
 					if (distance > radius_f - 0.5f)
 					{
-						// Calculate transparency based on distance from exact radius
 						alpha = (radius_f + 0.5f - distance);
 						blended_color = blend_color(color, alpha);
 						mlx_put_pixel(img, x, y, blended_color);
 					}
 					else
-						mlx_put_pixel(img, x, y, color);	// Interior: full opacity
+						mlx_put_pixel(img, x, y, color);
 				}
 			}
 		}
 	}
 }
 
-/*
- * Alpha blending helper for anti-aliasing
- * 
- * Reduces the opacity of a color based on alpha value to create
- * smooth transitions at circle edges.
- * 
- * Performance: Moderate - bit manipulation and floating point multiplication
- * Purpose: Essential for anti-aliasing effect in smooth circles
- */
-static uint32_t blend_color(uint32_t color, float alpha)
+static uint32_t	blend_color(uint32_t color, float alpha)
 {
 	uint8_t	r;
 	uint8_t	g;
@@ -144,17 +98,14 @@ static uint32_t blend_color(uint32_t color, float alpha)
 	uint8_t	original_alpha;
 	uint8_t	new_alpha;
 
-	if (alpha >= 1.0f) return color;           // Full opacity
-	if (alpha <= 0.0f) return 0x00000000;     // Transparent
-	// Extract RGBA components using bit manipulation
+	if (alpha >= 1.0f)
+		return (color);
+	if (alpha <= 0.0f)
+		return (0x00000000);
 	r = (uint8_t)((color >> 24) & 0xFF);
 	g = (uint8_t)((color >> 16) & 0xFF);
 	b = (uint8_t)((color >> 8) & 0xFF);
 	original_alpha = (uint8_t)(color & 0xFF);
-
-	// Apply alpha scaling to transparency channel
 	new_alpha = (uint8_t)(original_alpha * alpha);
-
-	// Reconstruct color with modified alpha
-	return (r << 24) | (g << 16) | (b << 8) | new_alpha;
+	return ((r << 24) | (g << 16) | (b << 8) | new_alpha);
 }
