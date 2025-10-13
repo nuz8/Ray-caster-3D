@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/25 18:42:58 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/07 08:33:53 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/13 21:56:51 by pamatya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 # define ORANGE 0xFF8000FF
 # define PURPLE 0x8000FFFF
 # define BROWN 0x8B4513FF
-# define PINK 0xFF69 #define TILE_SIZE 60
+# define PINK 0xFF69
 
 // Different lava red shades
 # define LAVA_RED_BRIGHT 0xFF4500FF  // Orange-red lava (RGB: 255, 69, 0)
@@ -399,6 +399,21 @@ typedef struct s_blob_ctx
 	int					draw_x;
 	int					draw_y;
 }						t_blob_ctx;
+
+typedef struct s_move_ctx
+{
+	t_data	*data;
+	t_map	*map;
+	double	base_x;
+	double	base_y;
+	double	final_x;
+	double	final_y;
+	double	move_x;
+	double	move_y;
+	double	step;
+	int		step_half;
+	bool	moved;
+}		t_move_ctx;
 
 /******************************************************************************/
 /*******     FUNCTIONS     ****************************************************/

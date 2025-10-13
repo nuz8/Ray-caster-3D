@@ -3,29 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   start_02.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sdemiroz <sdemiroz@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 08:35:12 by sdemiroz          #+#    #+#             */
-/*   Updated: 2025/10/07 08:35:12 by sdemiroz         ###   ########.fr       */
+/*   Updated: 2025/10/13 21:53:08 by pamatya          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
-
-typedef struct s_move_ctx
-{
-	t_data	*data;
-	t_map	*map;
-	double	base_x;
-	double	base_y;
-	double	final_x;
-	double	final_y;
-	double	move_x;
-	double	move_y;
-	double	step;
-	int		step_half;
-	bool	moved;
-}		t_move_ctx;
 
 static void	add_move_component(t_move_ctx *ctx, double x, double y);
 static void	setup_move_ctx(t_game *game, t_move_ctx *ctx);
