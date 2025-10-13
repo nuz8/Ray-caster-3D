@@ -21,7 +21,6 @@ int	main(int argc, char **argv)
 		exit_early(NULL, "Error, Invalid Argument\n", 1);
 	ft_bzero(&game, sizeof(t_game));
 	init_game_elements(&game, argv[1]);
-	printf("Let the games begin!!!\n");
 	start_drawing(&game);
 	init_events((void *)&game);
 	mlx_loop((game).mlx);

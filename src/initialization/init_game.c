@@ -80,7 +80,6 @@ static void	init_minimap(t_game *game, char *path_to_map)
 	map->test = mlx_new_image(game->mlx, data->mmp_disp_w, data->mmp_disp_h);
 	if (!map->test)
 		exit_early(game, "map_img: mlx_new_image failed", EXIT_FAILURE);
-	printf("%d	x	%d\n", data->mmp_w, data->mmp_h);
 	map->game = game;
 	map->player = game->player;
 }
