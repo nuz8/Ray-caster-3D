@@ -6,7 +6,7 @@
 #    By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 19:21:39 by pamatya           #+#    #+#              #
-#    Updated: 2025/09/04 14:33:59 by pamatya          ###   ########.fr        #
+#    Updated: 2025/10/13 21:59:19 by pamatya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,8 +65,7 @@ ifeq ($(UNAME_S), Darwin)
 	ifeq ($(USER), pranujamatya)
 		MINILIBX	+=	-L/opt/homebrew/lib
 	endif
-else ifeq ($(UNAME_S), Linux) # Need to confirm these Linux flags for Cub3D
-# 	MINILIBX	:=	-lglfw -ldl -lX11 -lpthread -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
+else ifeq ($(UNAME_S), Linux)
 	MINILIBX	:=	-lglfw -ldl
 
 endif
