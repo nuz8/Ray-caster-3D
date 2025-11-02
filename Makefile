@@ -6,7 +6,7 @@
 #    By: pamatya <pamatya@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 19:21:39 by pamatya           #+#    #+#              #
-#    Updated: 2025/10/13 21:59:19 by pamatya          ###   ########.fr        #
+#    Updated: 2025/11/02 17:13:16 by pamatya          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -156,26 +156,35 @@ verbos:
 	fi
 
 $(LIBFT):
-	@echo "$(YELLOW)$(BOLD)Building libft library...$(NC)"
-	@make -C $(LIB_DIR)
+	@printf "$(YELLOW)$(BOLD)Building Libft library...$(NC)"
+	@make -C $(LIB_DIR) > /dev/null 2>&1
+	@echo "$(GREEN)$(BOLD)Done!$(NC)"
 
 $(NAME): $(MLX) $(OBJS)
 	@$(CC) $(OBJS) $(ALL_FLAGS) $(LIBFT) $(MLX) -o $(NAME)
 	@if [ "$(debug)" = "yes" ]; then \
-		echo "$(GREEN)$(BOLD)Compilation successful for debugging$(NC)"; \
+		echo "$(GREEN)$(BOLD)Compilation successful for debugging!$(NC)"; \
 	else \
-		echo "$(GREEN)$(BOLD)Compilation successful$(NC)"; \
+		echo "$(GREEN)$(BOLD)Compilation successful!$(NC)"; \
 	fi
 
 $(MLX):
-	@if [ ! -d "$(MLX_DIR)" ]; then \
-		git submodule add https://github.com/codam-coding-college/MLX42.git $(MLX_DIR); \
-	fi
-	@if [ ! -d "$(MLX_DIR)/build" ]; then \
-		echo "$(YELLOW)$(BOLD)Building MLX42 library...$(NC)"; \
-	fi
+	@if ! git config --get-regexp "submodule\.$(MLX_DIR)\.url" > /dev/null \
+	&& [ ! -d ".git/modules/$(MLX_DIR)" ] \
+	&& ( [ ! -f ".gitmodules" ] || [ ! grep -q "path = $(MLX_DIR)" .gitmodules ] ); then \
+        printf "$(YELLOW)$(BOLD)Adding MLX42 submodule...$(NC)"; \
+        git submodule add https://github.com/codam-coding-college/MLX42.git $(MLX_DIR); \
+		echo "Done!"; \
+    fi
+	@if [ ! -f "$(MLX_DIR)/CMakeLists.txt" ]; then \
+		printf "$(YELLOW)$(BOLD)Initializing MLX42 submodule...$(NC)"; \
+        git submodule update --init --recursive > /dev/null 2>&1; \
+		echo "$(GREEN)$(BOLD)Done!$(NC)"; \
+    fi
+	@printf "$(YELLOW)$(BOLD)Building MLX42 library...$(NC)";
 	@cd $(MLX_DIR) && cmake -B build > /dev/null 2>&1 \
 	&& cmake --build build -j4 > /dev/null 2>&1
+	@echo "$(GREEN)$(BOLD)Done!$(NC)"
 
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	@mkdir -p $(@D)
@@ -204,7 +213,11 @@ fclean: clean
 	@make fclean -C $(LIB_DIR)
 	@echo "$(RED)$(BOLD)Cleaned executable$(NC)"
 
+ffclean: sub_deinit fclean
+
 re: fclean all
+
+rre: ffclean all
 
 bonus: all
 
@@ -229,13 +242,18 @@ submodule_update:
 	@echo "$(GREEN)$(BOLD)Sub-module MLX42 updated$(NC)"
 
 rebuild: sub_deinit sub_init
-	@echo "$(GREEN)$(BOLD)Sub-module MLX42 rebuilt$(NC)"
+	@echo "$(YELLOW)$(BOLD)Rebuilding MLX42 submodule...$(NC)"
+	@echo "$(GREEN)$(BOLD)Sub-module MLX42 rebuilt!$(NC)"
 
 sub_deinit:
-	@printf "$(RED)" && git submodule deinit -f .
+	@printf "$(RED)De-initializing MLX42 submodule...$(NC)"
+	@git submodule deinit -f . > /dev/null 2>&1
+	@echo "$(GREEN)Done!$(NC)"
 
 sub_init:
-	@printf "$(YELLOW)" && git submodule update --init --recursive
+	@printf "$(YELLOW)Initializing MLX42 submodule...$(NC)"
+	@git submodule update --init --recursive > /dev/null 2>&1
+	@echo "$(GREEN)Done!$(NC)"
 
 
 ######## -------------------------------------------------------------- ########
